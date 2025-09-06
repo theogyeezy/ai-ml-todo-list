@@ -4,8 +4,8 @@ import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedroc
 const bedrockClient = new BedrockRuntimeClient({
   region: import.meta.env.VITE_AWS_REGION || 'us-east-1',
   credentials: {
-    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    accessKeyId: import.meta.env.VITE_BEDROCK_ACCESS_KEY_ID,
+    secretAccessKey: import.meta.env.VITE_BEDROCK_SECRET_ACCESS_KEY,
   },
 });
 
@@ -65,9 +65,9 @@ Please provide only the extracted text, nothing else.`
       ]
     };
 
-    // Invoke Claude 3 Sonnet model
+    // Invoke Claude 3.5 Sonnet v2 model
     const command = new InvokeModelCommand({
-      modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
+      modelId: "anthropic.claude-3-5-sonnet-20241022-v2:0",
       contentType: "application/json",
       body: JSON.stringify(payload),
     });
