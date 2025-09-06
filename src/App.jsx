@@ -111,7 +111,8 @@ function App() {
           category: preAnalyzed.category,
           priority: preAnalyzed.priority,
           sentiment: preAnalyzed.sentiment,
-          timeEstimate: preAnalyzed.timeEstimate
+          timeEstimate: preAnalyzed.timeEstimate,
+          sharedListId: currentSharedListId
         };
         console.log('Using pre-analyzed data from vision:', todoData);
       } else {
@@ -132,9 +133,6 @@ function App() {
           timeEstimate,
           sharedListId: currentSharedListId
         };
-      } else {
-        // Add sharedListId to pre-analyzed data
-        todoData.sharedListId = currentSharedListId;
       }
       
       // Save to DynamoDB
