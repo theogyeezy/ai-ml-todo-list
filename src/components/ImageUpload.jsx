@@ -6,6 +6,10 @@ function ImageUpload({ onTodosExtracted, onClose }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [extractedText, setExtractedText] = useState('');
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [manualText, setManualText] = useState('');
+  const [ocrConfidence, setOcrConfidence] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleFileSelect = (file) => {
@@ -36,24 +40,31 @@ function ImageUpload({ onTodosExtracted, onClose }) {
     processImage(file);
   };
 
-  const processImage = async (file) => {
+  const processImage = async (file, usePreprocessing = true) => {
     try {
       setIsProcessing(true);
       setError(null);
+      setExtractedText('');
 
       // Extract text from image
-      const extractedText = await extractTextFromImage(file);
+      const text = await extractTextFromImage(file, usePreprocessing);
+      setExtractedText(text);
       
-      if (!extractedText || extractedText.trim().length === 0) {
-        setError('No text found in the image. Please try with a clearer image.');
+      if (!text || text.trim().length === 0) {
+        setError('No text found in the image. Try the manual input option below.');
+        setShowManualInput(true);
         return;
       }
 
+      console.log('Extracted text:', text);
+
       // Parse text into todo items (with AI analysis)
-      const todoItems = await parseTextToTodos(extractedText);
+      const todoItems = await parseTextToTodos(text);
       
       if (todoItems.length === 0) {
-        setError('Could not identify any todo items in the text. The text found was: "' + extractedText.substring(0, 100) + '..."');
+        setError(`Could not identify todo items. Try manual input. Text found: "${text.substring(0, 100)}..."`);
+        setShowManualInput(true);
+        setManualText(text);
         return;
       }
 
@@ -62,9 +73,50 @@ function ImageUpload({ onTodosExtracted, onClose }) {
       
     } catch (error) {
       console.error('Error processing image:', error);
-      setError('Failed to process the image. Please try again with a different image.');
+      
+      if (error.message.includes('low quality') || error.message.includes('LOW_CONFIDENCE')) {
+        setError(error.message + ' Try the manual input option below.');
+        setShowManualInput(true);
+      } else {
+        setError('Failed to process the image. Please try again or use manual input.');
+        setShowManualInput(true);
+      }
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleManualSubmit = async () => {
+    if (!manualText.trim()) return;
+    
+    try {
+      setIsProcessing(true);
+      setError(null);
+      
+      const todoItems = await parseTextToTodos(manualText.trim());
+      
+      if (todoItems.length === 0) {
+        setError('Could not identify any todo items in the text. Please check your formatting.');
+        return;
+      }
+      
+      onTodosExtracted(todoItems);
+    } catch (error) {
+      console.error('Error processing manual text:', error);
+      setError('Failed to process the text. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRetryWithPreprocessing = () => {
+    if (previewImage) {
+      // Get the original file from the preview
+      fetch(previewImage)
+        .then(r => r.blob())
+        .then(blob => {
+          processImage(new File([blob], "image.png", { type: blob.type }), false);
+        });
     }
   };
 
@@ -111,6 +163,18 @@ function ImageUpload({ onTodosExtracted, onClose }) {
           {error && (
             <div className="error-message">
               {error}
+              {previewImage && (
+                <button onClick={handleRetryWithPreprocessing} className="retry-btn">
+                  Try Different Processing
+                </button>
+              )}
+            </div>
+          )}
+          
+          {extractedText && (
+            <div className="extracted-text-preview">
+              <h4>📝 Extracted Text:</h4>
+              <div className="text-preview">"{extractedText}"</div>
             </div>
           )}
           
@@ -162,13 +226,49 @@ function ImageUpload({ onTodosExtracted, onClose }) {
             </div>
           )}
           
+          {showManualInput && (
+            <div className="manual-input-section">
+              <h4>✍️ Manual Input (Fallback)</h4>
+              <p>If OCR failed, type your todos manually:</p>
+              <textarea
+                value={manualText}
+                onChange={(e) => setManualText(e.target.value)}
+                placeholder="Type your todos here, one per line:&#10;- Buy groceries&#10;- Call dentist&#10;- Finish report"
+                className="manual-text-input"
+                rows="6"
+                disabled={isProcessing}
+              />
+              <div className="manual-actions">
+                <button 
+                  className="process-manual-btn"
+                  onClick={handleManualSubmit}
+                  disabled={isProcessing || !manualText.trim()}
+                >
+                  {isProcessing ? '🔄 Processing...' : '✓ Process Text'}
+                </button>
+                <button 
+                  className="cancel-manual-btn"
+                  onClick={() => {
+                    setShowManualInput(false);
+                    setManualText('');
+                  }}
+                  disabled={isProcessing}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="upload-tips">
             <h4>💡 Tips for better results:</h4>
             <ul>
-              <li>Use high-contrast images (dark text on light background)</li>
-              <li>Ensure text is clearly readable</li>
-              <li>Avoid blurry or distorted images</li>
-              <li>Handwritten notes work best when neat and clear</li>
+              <li><strong>Use high-contrast images</strong> (dark text on light background)</li>
+              <li><strong>Write clearly</strong> - print letters work better than cursive</li>
+              <li><strong>Good lighting</strong> - avoid shadows and glare</li>
+              <li><strong>Hold steady</strong> - avoid blurry photos</li>
+              <li><strong>One todo per line</strong> - use bullet points or numbers</li>
+              <li>If OCR fails, use the manual input option</li>
             </ul>
           </div>
         </div>
