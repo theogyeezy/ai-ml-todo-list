@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getSuggestions } from '../utils/aiHelpers';
+import { getSuggestions, splitMultipleTodos } from '../utils/aiHelpers';
 import ImageUpload from './ImageUpload';
 
 function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
@@ -48,10 +48,23 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
     }
   }, [text, todos]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (text.trim()) {
-      addTodo(text);
+      // Split multiple todos from the input
+      const multipleTodos = splitMultipleTodos(text.trim());
+      
+      if (multipleTodos.length > 1) {
+        console.log(`Detected ${multipleTodos.length} todos:`, multipleTodos);
+        // Add each todo separately
+        for (const todoText of multipleTodos) {
+          await addTodo(todoText);
+        }
+      } else {
+        // Single todo, add normally
+        await addTodo(text);
+      }
+      
       setText('');
       setShowSuggestions(false);
     }

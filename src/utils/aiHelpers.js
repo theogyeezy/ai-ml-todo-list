@@ -205,3 +205,65 @@ export const estimateTime = (text) => {
     confidence: matched ? 'high' : 'medium'
   };
 };
+
+// Split multiple todos from a single input
+export const splitMultipleTodos = (text) => {
+  if (!text || text.trim().length === 0) {
+    return [];
+  }
+
+  const cleanText = text.trim();
+  
+  // Common patterns that indicate multiple todos
+  const splitPatterns = [
+    // "and" separators: "do this and do that"
+    /\s+and\s+(?=\w)/gi,
+    // Comma separators: "buy milk, walk dog, call mom"
+    /,\s*(?=\w)/g,
+    // Semicolon separators: "task 1; task 2; task 3"
+    /;\s*(?=\w)/g,
+    // "then" separators: "do this then do that"
+    /\s+then\s+(?=\w)/gi,
+    // "also" separators: "buy milk also walk dog"
+    /\s+also\s+(?=\w)/gi,
+    // Bullet point style: "• task 1 • task 2"
+    /\s*[•·*]\s*(?=\w)/g,
+    // Numbered lists: "1. task 1 2. task 2"
+    /\s*\d+\.\s*(?=\w)/g,
+    // Dash separators: "task 1 - task 2"
+    /\s*-\s*(?=\w)/g
+  ];
+
+  let todos = [cleanText];
+  
+  // Apply each split pattern
+  for (const pattern of splitPatterns) {
+    const newTodos = [];
+    for (const todo of todos) {
+      const splits = todo.split(pattern);
+      newTodos.push(...splits);
+    }
+    todos = newTodos;
+  }
+  
+  // Clean up and filter the results
+  const cleanedTodos = todos
+    .map(todo => todo.trim())
+    .filter(todo => todo.length > 2) // Remove very short items
+    .filter(todo => !todo.match(/^(and|then|also|or)$/i)) // Remove connector words
+    .map(todo => {
+      // Remove leading numbers, bullets, etc.
+      return todo.replace(/^[\d•·*-]+\.?\s*/, '').trim();
+    })
+    .filter(todo => todo.length > 2); // Filter again after cleanup
+  
+  // If we only have one todo, return it as-is
+  if (cleanedTodos.length <= 1) {
+    return [cleanText];
+  }
+  
+  // Capitalize first letter of each todo
+  return cleanedTodos.map(todo => 
+    todo.charAt(0).toUpperCase() + todo.slice(1).toLowerCase()
+  );
+};
