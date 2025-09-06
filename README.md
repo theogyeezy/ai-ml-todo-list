@@ -91,6 +91,36 @@ npm run build
 
 Deploy the `dist` folder to your preferred static hosting service.
 
+## 🚀 Automated Deployment
+
+This project includes GitHub Actions for automatic deployment to AWS S3 when you push to the main branch.
+
+### Setting up GitHub Actions
+
+1. **Set up Repository Secrets** in your GitHub repository settings:
+   - Go to `Settings` → `Secrets and variables` → `Actions`
+   - Add the following secrets:
+     - `VITE_AWS_ACCESS_KEY_ID`: Your AWS access key (for build process)
+     - `VITE_AWS_SECRET_ACCESS_KEY`: Your AWS secret key (for build process) 
+     - `AWS_ACCESS_KEY_ID`: Your AWS access key (for deployment)
+     - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key (for deployment)
+
+2. **Update S3 bucket name** in `.github/workflows/deploy.yml` if using a different bucket
+
+3. **Push to main branch** - deployment happens automatically!
+
+### Deployment Process
+- ✅ **Triggers**: Automatic on push to main branch
+- ✅ **Build**: Installs dependencies and builds the React app
+- ✅ **Deploy**: Syncs built files to S3 bucket
+- ✅ **Cleanup**: Removes old files from S3
+- ✅ **Notification**: Shows deployment success message
+
+### Optional CloudFront Integration
+To enable CloudFront cache invalidation:
+1. Add `CLOUDFRONT_DISTRIBUTION_ID` to your GitHub secrets
+2. Uncomment the CloudFront invalidation step in the workflow
+
 ## 🌐 Live Demo
 
 The application is deployed on AWS S3: [Live Demo](http://ai-todo-app-matthew-1757183940.s3-website-us-east-1.amazonaws.com)
