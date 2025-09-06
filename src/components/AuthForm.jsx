@@ -46,22 +46,29 @@ function AuthForm({ onAuthSuccess }) {
 
   return (
     <div className="auth-container">
-      <div className="auth-form">
-        <h2 className="auth-title">
-          {isLogin ? '👋 Welcome Back!' : '✨ Create Account'}
-        </h2>
-        <p className="auth-subtitle">
-          {isLogin 
-            ? 'Sign in to access your personal AI todo list' 
-            : 'Join to get your own smart todo assistant'
-          }
-        </p>
+      <div className="card auth-form">
+        <div className="auth-header">
+          <h2 className="auth-title">
+            {isLogin ? '👋 Welcome Back!' : '✨ Create Account'}
+          </h2>
+          <p className="auth-subtitle">
+            {isLogin 
+              ? 'Sign in to access your personal AI todo list' 
+              : 'Join to get your own smart todo assistant'
+            }
+          </p>
+        </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="alert alert-error">
+            <span className="alert-icon">⚠️</span>
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="auth-form-content">
           {!isLogin && (
-            <div className="form-group">
+            <div className="input-group">
               <input
                 type="text"
                 name="name"
@@ -69,12 +76,12 @@ function AuthForm({ onAuthSuccess }) {
                 value={formData.name}
                 onChange={handleChange}
                 required={!isLogin}
-                className="auth-input"
+                className="input input-primary"
               />
             </div>
           )}
 
-          <div className="form-group">
+          <div className="input-group">
             <input
               type="email"
               name="email"
@@ -82,11 +89,11 @@ function AuthForm({ onAuthSuccess }) {
               value={formData.email}
               onChange={handleChange}
               required
-              className="auth-input"
+              className="input input-primary"
             />
           </div>
 
-          <div className="form-group">
+          <div className="input-group">
             <input
               type="password"
               name="password"
@@ -95,13 +102,13 @@ function AuthForm({ onAuthSuccess }) {
               onChange={handleChange}
               required
               minLength="6"
-              className="auth-input"
+              className="input input-primary"
             />
           </div>
 
           <button 
             type="submit" 
-            className="auth-button"
+            className="btn btn-primary btn-large"
             disabled={loading}
           >
             {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
@@ -109,10 +116,12 @@ function AuthForm({ onAuthSuccess }) {
         </form>
 
         <div className="auth-switch">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <span className="auth-switch-text">
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+          </span>
           <button 
             type="button"
-            className="switch-button"
+            className="btn btn-text"
             onClick={() => {
               setIsLogin(!isLogin);
               setError('');
@@ -123,9 +132,15 @@ function AuthForm({ onAuthSuccess }) {
           </button>
         </div>
 
-        <div className="auth-info">
-          <p>🔒 Your data is securely stored in AWS</p>
-          <p>🤖 AI analysis happens in your browser</p>
+        <div className="auth-footer">
+          <div className="auth-info-item">
+            <span className="auth-info-icon">🔒</span>
+            Your data is securely stored in AWS
+          </div>
+          <div className="auth-info-item">
+            <span className="auth-info-icon">🤖</span>
+            AI analysis powered by Claude
+          </div>
         </div>
       </div>
     </div>

@@ -115,7 +115,7 @@ function SubtaskList({ parentTodoId, onSubtasksChange }) {
         <div className="subtasks-progress">
           <div className="progress-info">
             <span className="subtasks-count">
-              {subtasks.filter(s => s.completed).length}/{subtasks.length} subtasks completed
+              {subtasks.filter(s => s.completed).length}/{subtasks.length} completed
             </span>
             <span className="completion-percentage">{getCompletionPercentage()}%</span>
           </div>
@@ -136,23 +136,28 @@ function SubtaskList({ parentTodoId, onSubtasksChange }) {
                 type="checkbox"
                 checked={subtask.completed}
                 onChange={() => toggleSubtask(subtask.todoId)}
-                className="subtask-checkbox"
+                className="checkbox subtask-checkbox"
               />
-              <span className="subtask-text">{subtask.text}</span>
-              <div className="subtask-meta">
-                <span className="subtask-category" style={{ color: subtask.priority?.color }}>
-                  {subtask.category}
-                </span>
-                <span className="subtask-time">{subtask.timeEstimate?.display}</span>
-                <span className="subtask-sentiment">{subtask.sentiment?.emoji}</span>
+              <div className="subtask-content">
+                <span className="subtask-text">{subtask.text}</span>
+                <div className="subtask-meta">
+                  <span className="badge badge-small" style={{ 
+                    backgroundColor: subtask.priority?.color,
+                    color: 'white'
+                  }}>
+                    {subtask.category}
+                  </span>
+                  <span className="badge badge-small badge-time">{subtask.timeEstimate?.display}</span>
+                  <span className="subtask-sentiment">{subtask.sentiment?.emoji}</span>
+                </div>
               </div>
             </div>
             <button 
               onClick={() => deleteSubtask(subtask.todoId)}
-              className="delete-subtask-btn"
+              className="btn btn-icon btn-small delete-subtask-btn"
               title="Delete subtask"
             >
-              ✕
+              🗑️
             </button>
           </div>
         ))}
@@ -162,28 +167,35 @@ function SubtaskList({ parentTodoId, onSubtasksChange }) {
         {!showAddForm ? (
           <button 
             onClick={() => setShowAddForm(true)}
-            className="add-subtask-btn"
+            className="btn btn-secondary btn-small add-subtask-btn"
             disabled={loading}
           >
             ➕ Add Subtask
           </button>
         ) : (
           <form onSubmit={addSubtask} className="add-subtask-form">
-            <input
-              type="text"
-              value={newSubtaskText}
-              onChange={(e) => setNewSubtaskText(e.target.value)}
-              placeholder="Enter subtask..."
-              className="subtask-input"
-              autoFocus
-              disabled={loading}
-            />
-            <div className="subtask-form-buttons">
-              <button type="submit" disabled={loading || !newSubtaskText.trim()}>
+            <div className="input-group">
+              <input
+                type="text"
+                value={newSubtaskText}
+                onChange={(e) => setNewSubtaskText(e.target.value)}
+                placeholder="Enter subtask..."
+                className="input input-primary"
+                autoFocus
+                disabled={loading}
+              />
+            </div>
+            <div className="btn-group">
+              <button 
+                type="submit" 
+                className="btn btn-primary btn-small"
+                disabled={loading || !newSubtaskText.trim()}
+              >
                 {loading ? 'Adding...' : 'Add'}
               </button>
               <button 
-                type="button" 
+                type="button"
+                className="btn btn-text btn-small"
                 onClick={() => {
                   setShowAddForm(false);
                   setNewSubtaskText('');

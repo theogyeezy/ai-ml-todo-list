@@ -278,33 +278,45 @@ function App() {
 
   return (
     <div className="app">
-      <h1>🤖 AI/ML To Do List</h1>
-      <UserProfile 
-        user={user} 
-        onLogout={handleLogout}
-        onShowAdmin={handleShowAdmin}
-      />
-      <SharedListSelector 
-        onListChange={handleSharedListChange}
-        currentListId={currentSharedListId}
-      />
-      <AddTodo 
-        addTodo={addTodo} 
-        todos={todos} 
-        loading={loading}
-        onTypingStart={() => setIsUserTyping(true)}
-        onTypingEnd={() => setIsUserTyping(false)}
-      />
-      <AIInsights todos={todos} totalTime={getTotalEstimatedTime()} />
-      <TodoList
-        todos={todos}
-        toggleTodo={toggleTodo}
-        deleteTodo={deleteTodo}
-        updateTodo={updateTodoText}
-      />
-      <div className="footer-info">
-        📊 {todos.length} total todos | ☁️ Saved to AWS DynamoDB | 👤 {user.name}
-        {isUserTyping && <span style={{marginLeft: '10px', opacity: 0.7}}>✏️ Auto-refresh paused while typing</span>}
+      <div className="app-header">
+        <h1 className="app-title">🤖 AI Todo</h1>
+        <UserProfile 
+          user={user} 
+          onLogout={handleLogout}
+          onShowAdmin={handleShowAdmin}
+        />
+      </div>
+      
+      <div className="app-content">
+        <SharedListSelector 
+          onListChange={handleSharedListChange}
+          currentListId={currentSharedListId}
+        />
+        <AddTodo 
+          addTodo={addTodo} 
+          todos={todos} 
+          loading={loading}
+          onTypingStart={() => setIsUserTyping(true)}
+          onTypingEnd={() => setIsUserTyping(false)}
+        />
+        <AIInsights todos={todos} totalTime={getTotalEstimatedTime()} />
+        <TodoList
+          todos={todos}
+          toggleTodo={toggleTodo}
+          deleteTodo={deleteTodo}
+          updateTodo={updateTodoText}
+        />
+      </div>
+      
+      <div className="app-footer">
+        <div className="footer-stats">
+          <span className="footer-stat">📊 {todos.length} todos</span>
+          <span className="footer-stat">☁️ AWS DynamoDB</span>
+          <span className="footer-stat">👤 {user.name}</span>
+          {isUserTyping && (
+            <span className="footer-stat typing-indicator">✏️ Auto-refresh paused</span>
+          )}
+        </div>
       </div>
     </div>
   );

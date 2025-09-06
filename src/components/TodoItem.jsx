@@ -49,106 +49,123 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
   };
 
   return (
-    <div className={`todo-item ${isUpdating ? 'updating' : ''}`} style={{ borderLeft: `4px solid ${todo.priority?.color || '#2196F3'}` }}>
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={() => toggleTodo(todo.todoId || todo.id)}
-        className="todo-checkbox"
-        disabled={isEditing || isUpdating}
-      />
-      <div className="todo-content">
-        <div className="todo-header">
-          {isEditing ? (
-            <input
-              type="text"
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="todo-edit-input"
-              autoFocus
-              disabled={isUpdating}
-            />
-          ) : (
-            <span 
-              className={`todo-text ${todo.completed ? 'completed' : ''}`}
-              onDoubleClick={!todo.completed ? handleEdit : undefined}
-              title={!todo.completed ? "Double-click to edit" : ""}
-            >
-              {todo.text}
-            </span>
-          )}
-          {!isEditing && (
-            <span className="sentiment-emoji" title={`Mood: ${todo.sentiment?.mood}`}>
-              {todo.sentiment?.emoji}
-            </span>
-          )}
+    <div className={`card todo-item ${todo.completed ? 'completed' : ''} ${isUpdating ? 'updating' : ''}`}>
+      <div className="todo-main">
+        <div className="todo-checkbox-wrapper">
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => toggleTodo(todo.todoId || todo.id)}
+            className="checkbox todo-checkbox"
+            disabled={isEditing || isUpdating}
+          />
         </div>
-        {!isEditing && (
-          <div className="todo-metadata">
-            <span className="category-badge" style={{ backgroundColor: getCategoryColor(todo.category) }}>
-              {todo.category}
-            </span>
-            <span className="priority-badge" style={{ backgroundColor: todo.priority?.color }}>
-              {todo.priority?.level}
-            </span>
-            <span className="time-estimate">
-              ⏱️ {todo.timeEstimate?.display}
-            </span>
-            {!todo.parentTodoId && (
-              <button 
-                className="subtasks-toggle"
-                onClick={() => setShowSubtasks(!showSubtasks)}
-                title={showSubtasks ? 'Hide subtasks' : 'Show subtasks'}
-              >
-                📋 {subtasksCount > 0 ? `${subtasksCount}` : 'Subtasks'} {showSubtasks ? '▲' : '▼'}
-              </button>
+        
+        <div className="todo-content">
+          <div className="todo-header">
+            {isEditing ? (
+              <input
+                type="text"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="input input-primary todo-edit-input"
+                autoFocus
+                disabled={isUpdating}
+              />
+            ) : (
+              <div className="todo-text-container">
+                <span 
+                  className={`todo-text ${todo.completed ? 'completed' : ''}`}
+                  onDoubleClick={!todo.completed ? handleEdit : undefined}
+                  title={!todo.completed ? "Double-click to edit" : ""}
+                >
+                  {todo.text}
+                </span>
+                <span className="todo-sentiment" title={`Mood: ${todo.sentiment?.mood}`}>
+                  {todo.sentiment?.emoji}
+                </span>
+              </div>
             )}
           </div>
-        )}
-        {isEditing && (
-          <div className="edit-actions">
-            <button 
-              className="save-edit-btn" 
-              onClick={handleSave}
-              disabled={isUpdating || !editText.trim()}
-            >
-              {isUpdating ? '🔄' : '✓'} Save
-            </button>
-            <button 
-              className="cancel-edit-btn" 
-              onClick={handleCancel}
+          
+          {!isEditing && (
+            <div className="todo-metadata">
+              <div className="todo-badges">
+                <span className="badge badge-category" style={{ 
+                  backgroundColor: getCategoryColor(todo.category),
+                  borderLeft: `4px solid ${todo.priority?.color || '#2196F3'}`
+                }}>
+                  {todo.category}
+                </span>
+                <span className="badge badge-priority" style={{ backgroundColor: todo.priority?.color }}>
+                  {todo.priority?.level}
+                </span>
+                <span className="badge badge-time">
+                  ⏱️ {todo.timeEstimate?.display}
+                </span>
+              </div>
+              {!todo.parentTodoId && (
+                <button 
+                  className="btn btn-secondary btn-small subtasks-toggle"
+                  onClick={() => setShowSubtasks(!showSubtasks)}
+                  title={showSubtasks ? 'Hide subtasks' : 'Show subtasks'}
+                >
+                  📋 {subtasksCount > 0 ? `${subtasksCount}` : 'Subtasks'} {showSubtasks ? '▲' : '▼'}
+                </button>
+              )}
+            </div>
+          )}
+          
+          {isEditing && (
+            <div className="edit-actions btn-group">
+              <button 
+                className="btn btn-primary btn-small" 
+                onClick={handleSave}
+                disabled={isUpdating || !editText.trim()}
+              >
+                {isUpdating ? '🔄' : '✓'} Save
+              </button>
+              <button 
+                className="btn btn-text btn-small" 
+                onClick={handleCancel}
+                disabled={isUpdating}
+              >
+                ✕ Cancel
+              </button>
+            </div>
+          )}
+          
+          {isUpdating && (
+            <div className="alert alert-info">
+              <span className="alert-icon">🤖</span>
+              Re-analyzing with AI...
+            </div>
+          )}
+        </div>
+        
+        <div className="todo-actions">
+          {!isEditing && !todo.completed && (
+            <button
+              onClick={handleEdit}
+              className="btn btn-icon btn-small"
+              title="Edit todo"
               disabled={isUpdating}
             >
-              ✕ Cancel
+              ✏️
             </button>
-          </div>
-        )}
-        {isUpdating && (
-          <div className="updating-message">
-            🤖 Re-analyzing with AI...
-          </div>
-        )}
-      </div>
-      <div className="todo-actions">
-        {!isEditing && !todo.completed && (
+          )}
           <button
-            onClick={handleEdit}
-            className="edit-btn"
-            title="Edit todo"
-            disabled={isUpdating}
+            onClick={() => deleteTodo(todo.todoId || todo.id)}
+            className="btn btn-text btn-small delete-btn"
+            disabled={isEditing || isUpdating}
+            title="Delete todo"
           >
-            ✏️
+            🗑️
           </button>
-        )}
-        <button
-          onClick={() => deleteTodo(todo.todoId || todo.id)}
-          className="delete-btn"
-          disabled={isEditing || isUpdating}
-        >
-          Delete
-        </button>
+        </div>
       </div>
+      
       {!todo.parentTodoId && showSubtasks && (
         <div className="subtasks-section">
           <SubtaskList 

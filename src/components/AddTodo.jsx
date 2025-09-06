@@ -122,9 +122,9 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
   };
 
   return (
-    <div className="add-todo-container">
+    <div className="card add-todo-container">
       <form onSubmit={handleSubmit} className="add-todo-form">
-        <div className="input-wrapper">
+        <div className="input-group add-todo-input-group">
           <input
             type="text"
             value={text}
@@ -152,10 +152,17 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
               }
               if (onTypingEnd) onTypingEnd();
             }}
-            placeholder="Enter a new todo... (AI will analyze it!)"
-            className="todo-input"
+            placeholder="What needs to be done?"
+            className="input input-primary"
             disabled={loading}
           />
+          <button type="submit" className="btn btn-primary btn-icon" disabled={loading}>
+            {loading ? (
+              <span className="loading-spinner">⏳</span>
+            ) : (
+              <span>➕</span>
+            )}
+          </button>
           {showSuggestions && (
             <div className="suggestions-dropdown">
               {suggestions.map((suggestion, index) => (
@@ -170,49 +177,47 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
             </div>
           )}
         </div>
-        <button type="submit" className="add-btn" disabled={loading}>
-          {loading ? 'Analyzing...' : 'Add Todo'}
-        </button>
       </form>
       
-      <div className="vision-controls">
+      <div className="vision-section">
         <button 
-          className="vision-btn upload-btn"
+          className="btn btn-secondary"
           onClick={() => setShowImageUpload(true)}
           disabled={loading}
         >
-          📤 Upload Image or Photo
+          <span className="btn-icon">📱</span>
+          Upload Image
         </button>
-      </div>
-      
-      <div className="vision-options">
-        <label className="auto-add-checkbox">
+        
+        <label className="checkbox-label">
           <input
             type="checkbox"
             checked={autoAddExtracted}
             onChange={(e) => setAutoAddExtracted(e.target.checked)}
+            className="checkbox"
           />
-          <span>Auto-add extracted todos immediately</span>
+          <span className="checkbox-text">Auto-add extracted todos</span>
         </label>
       </div>
 
       {extractedTodos.length > 0 && (
-        <div className="extracted-todos highlighted">
-          <div className="extracted-warning">
-            ⚠️ Review extracted todos below - they won't be saved until you click "Add"!
+        <div className="card extracted-todos">
+          <div className="alert alert-warning">
+            <span className="alert-icon">⚠️</span>
+            Review extracted todos - they won't be saved until you click "Add"
           </div>
           <div className="extracted-header">
-            <h3>📝 Extracted Todos ({extractedTodos.length})</h3>
-            <div className="extracted-actions">
+            <h3 className="extracted-title">📝 Extracted Todos ({extractedTodos.length})</h3>
+            <div className="btn-group">
               <button 
-                className="add-all-btn pulse"
+                className="btn btn-primary btn-small"
                 onClick={handleAddAllExtractedTodos}
                 disabled={loading}
               >
                 ➕ Add All
               </button>
               <button 
-                className="discard-btn"
+                className="btn btn-text btn-small"
                 onClick={handleDiscardExtracted}
               >
                 🗑️ Discard
@@ -226,26 +231,25 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
                   <span className="extracted-text">{todo.text || todo}</span>
                   {todo.isAnalyzed && (
                     <div className="extracted-meta">
-                      <span className="category-badge" style={{fontSize: '0.7rem'}}>
+                      <span className="badge badge-category">
                         {todo.category}
                       </span>
-                      <span className="priority-badge" style={{
-                        backgroundColor: todo.priority.color,
-                        fontSize: '0.7rem'
+                      <span className="badge badge-priority" style={{
+                        backgroundColor: todo.priority.color
                       }}>
                         {todo.priority.level}
                       </span>
-                      <span className="sentiment-emoji" title={todo.sentiment.mood}>
+                      <span className="extracted-sentiment" title={todo.sentiment.mood}>
                         {todo.sentiment.emoji}
                       </span>
-                      <span className="time-estimate" style={{fontSize: '0.7rem'}}>
+                      <span className="badge badge-time">
                         ⏱ {todo.timeEstimate.display}
                       </span>
                     </div>
                   )}
                 </div>
                 <button
-                  className="add-single-btn"
+                  className="btn btn-icon btn-small"
                   onClick={() => handleAddExtractedTodo(todo)}
                   disabled={loading}
                 >
@@ -258,9 +262,14 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
       )}
       
       <div className="ai-hint">
-        💡 Try: "urgent meeting tomorrow", "buy groceries", "study for exam", "call mom"
-        <br />
-        📸 Or upload a photo of your handwritten notes to extract todos automatically!
+        <div className="hint-content">
+          <span className="hint-icon">💡</span>
+          <div className="hint-text">
+            Try: "urgent meeting tomorrow" • "buy groceries" • "study for exam"
+            <br />
+            <span className="hint-subtext">📱 Or upload a photo to extract todos automatically</span>
+          </div>
+        </div>
       </div>
 
       {showImageUpload && (

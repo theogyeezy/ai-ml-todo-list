@@ -40,60 +40,64 @@ function AIInsights({ todos, totalTime }) {
   }
 
   return (
-    <div className="ai-insights">
-      <h3>🧠 AI Insights</h3>
+    <div className="card ai-insights">
+      <div className="ai-insights-header">
+        <h3 className="insights-title">🧠 AI Insights</h3>
+      </div>
       <div className="insights-grid">
-        <div className="insight-card">
-          <h4>📊 Categories</h4>
+        <div className="card insight-card">
+          <h4 className="insight-title">📊 Categories</h4>
           <div className="category-list">
             {categoryStats.slice(0, 3).map(([category, count]) => (
               <div key={category} className="stat-item">
-                <span>{category}:</span>
-                <span className="stat-value">{count}</span>
+                <span className="stat-label">{category}</span>
+                <span className="badge badge-info stat-value">{count}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="insight-card">
-          <h4>🚨 Priority Overview</h4>
+        <div className="card insight-card">
+          <h4 className="insight-title">🚨 Priority Overview</h4>
           <div className="priority-bars">
             {priorityStats.urgent > 0 && (
-              <div className="priority-bar urgent">
-                Urgent: {priorityStats.urgent}
+              <div className="priority-item">
+                <span className="badge badge-urgent">Urgent: {priorityStats.urgent}</span>
               </div>
             )}
             {priorityStats.high > 0 && (
-              <div className="priority-bar high">
-                High: {priorityStats.high}
+              <div className="priority-item">
+                <span className="badge badge-high">High: {priorityStats.high}</span>
               </div>
             )}
             {priorityStats.normal > 0 && (
-              <div className="priority-bar normal">
-                Normal: {priorityStats.normal}
+              <div className="priority-item">
+                <span className="badge badge-normal">Normal: {priorityStats.normal}</span>
               </div>
             )}
             {priorityStats.low > 0 && (
-              <div className="priority-bar low">
-                Low: {priorityStats.low}
+              <div className="priority-item">
+                <span className="badge badge-low">Low: {priorityStats.low}</span>
               </div>
             )}
           </div>
         </div>
 
-        <div className="insight-card">
-          <h4>😊 Mood Analysis</h4>
+        <div className="card insight-card">
+          <h4 className="insight-title">😊 Mood Analysis</h4>
           <div className="mood-display">
             <span className="mood-emoji">{sentimentOverview.emoji}</span>
             <span className="mood-text">{sentimentOverview.message}</span>
           </div>
         </div>
 
-        <div className="insight-card">
-          <h4>⏰ Time Estimate</h4>
+        <div className="card insight-card">
+          <h4 className="insight-title">⏰ Time Estimate</h4>
           <div className="time-display">
-            <span className="time-total">{totalTime}</span>
-            <span className="time-label">to complete all tasks</span>
+            <div className="time-value">
+              <span className="time-total">{totalTime}</span>
+              <span className="time-label">remaining</span>
+            </div>
           </div>
         </div>
       </div>

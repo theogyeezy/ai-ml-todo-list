@@ -403,7 +403,7 @@ export const todoService = {
 
     // Check if user has owner permissions
     const currentUserId = sessionService.getUser()?.userId || 'anonymous';
-    if (list.permissions[currentUserId] !== 'owner') {
+    if (list.ownerId !== currentUserId && list.permissions[currentUserId] !== 'owner') {
       throw new Error('Only owners can add members');
     }
 
