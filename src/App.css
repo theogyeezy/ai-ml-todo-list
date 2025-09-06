@@ -60,13 +60,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background-primary: #000000;
-    --background-secondary: #1C1C1E;
-    --surface: rgba(44, 44, 46, 0.8);
-    --surface-elevated: rgba(58, 58, 60, 0.95);
+    --background-primary: #1C1C1E;
+    --background-secondary: #2C2C2E;
+    --surface: rgba(58, 58, 60, 0.8);
+    --surface-elevated: rgba(72, 72, 74, 0.95);
     --text-primary: #FFFFFF;
-    --text-secondary: #98989D;
-    --border-color: rgba(255, 255, 255, 0.2);
+    --text-secondary: #AEAEB2;
+    --border-color: rgba(255, 255, 255, 0.15);
+    
+    /* Dark mode shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -96,12 +101,86 @@ body {
   margin: 0 auto;
   padding: var(--spacing-lg);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
 @media (max-width: 768px) {
   .app {
     padding: var(--spacing-md);
   }
+}
+
+/* App Layout */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.app-footer {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-stats {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.footer-stat {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.typing-indicator {
+  color: var(--apple-orange);
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-message {
+  font-size: 1rem;
+  color: var(--text-secondary);
 }
 
 /* Typography */
@@ -130,6 +209,8 @@ h1 {
   -webkit-backdrop-filter: blur(20px);
   box-shadow: var(--shadow-md);
   transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .card:hover {
