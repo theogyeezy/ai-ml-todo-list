@@ -1,15 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getSuggestions } from '../utils/aiHelpers';
 import CameraCapture from './CameraCapture';
 import ImageUpload from './ImageUpload';
 
-function AddTodo({ addTodo, todos, loading }) {
+function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
   const [text, setText] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showCameraCapture, setShowCameraCapture] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [extractedTodos, setExtractedTodos] = useState([]);
+  const typingTimeoutRef = useRef(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (text.length > 2) {
@@ -73,7 +83,30 @@ function AddTodo({ addTodo, todos, loading }) {
           <input
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              setText(e.target.value);
+              
+              // Clear any existing timeout
+              if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+              }
+              
+              // Mark as typing
+              if (onTypingStart) onTypingStart();
+              
+              // Set a timeout to mark as not typing after 1 second of no input
+              typingTimeoutRef.current = setTimeout(() => {
+                if (onTypingEnd) onTypingEnd();
+              }, 1000);
+            }}
+            onFocus={() => onTypingStart && onTypingStart()}
+            onBlur={() => {
+              // Clear timeout and mark as not typing
+              if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+              }
+              if (onTypingEnd) onTypingEnd();
+            }}
             placeholder="Enter a new todo... (AI will analyze it!)"
             className="todo-input"
             disabled={loading}

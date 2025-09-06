@@ -23,6 +23,7 @@ function App() {
   const [dataLoading, setDataLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [isUserTyping, setIsUserTyping] = useState(false);
 
   // Check for existing user session and refresh user data
   useEffect(() => {
@@ -83,15 +84,19 @@ function App() {
   }, [user]);
 
   // Set up periodic user data refresh (every 30 seconds)
+  // But skip refresh if user is typing
   useEffect(() => {
     if (user) {
       const interval = setInterval(() => {
-        refreshUserData(user.email);
+        // Only refresh if user is not typing
+        if (!isUserTyping) {
+          refreshUserData(user.email);
+        }
       }, 30000); // 30 seconds
 
       return () => clearInterval(interval);
     }
-  }, [user]);
+  }, [user, isUserTyping]);
 
   const addTodo = async (text, preAnalyzed = null) => {
     setLoading(true);
@@ -242,7 +247,13 @@ function App() {
           Loading AI models... This may take a few seconds on first load.
         </div>
       )}
-      <AddTodo addTodo={addTodo} todos={todos} loading={loading} />
+      <AddTodo 
+        addTodo={addTodo} 
+        todos={todos} 
+        loading={loading}
+        onTypingStart={() => setIsUserTyping(true)}
+        onTypingEnd={() => setIsUserTyping(false)}
+      />
       <AIInsights todos={todos} totalTime={getTotalEstimatedTime()} />
       <TodoList
         todos={todos}
@@ -251,6 +262,7 @@ function App() {
       />
       <div className="footer-info">
         📊 {todos.length} total todos | ☁️ Saved to AWS DynamoDB | 👤 {user.name}
+        {isUserTyping && <span style={{marginLeft: '10px', opacity: 0.7}}>✏️ Auto-refresh paused while typing</span>}
       </div>
     </div>
   );
