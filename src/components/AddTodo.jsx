@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getSuggestions } from '../utils/aiHelpers';
-import CameraCapture from './CameraCapture';
 import ImageUpload from './ImageUpload';
 
 function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
   const [text, setText] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [showCameraCapture, setShowCameraCapture] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [extractedTodos, setExtractedTodos] = useState(() => {
     // Load from localStorage on mount
@@ -66,7 +64,6 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
 
   const handleTodosExtracted = async (todoItems) => {
     setExtractedTodos(todoItems);
-    setShowCameraCapture(false);
     setShowImageUpload(false);
     
     // Auto-add if option is enabled
@@ -167,18 +164,11 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
       
       <div className="vision-controls">
         <button 
-          className="vision-btn camera-btn"
-          onClick={() => setShowCameraCapture(true)}
-          disabled={loading}
-        >
-          📸 Take Photo
-        </button>
-        <button 
           className="vision-btn upload-btn"
           onClick={() => setShowImageUpload(true)}
           disabled={loading}
         >
-          📤 Upload Image
+          📤 Upload Image or Photo
         </button>
       </div>
       
@@ -257,15 +247,8 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
       <div className="ai-hint">
         💡 Try: "urgent meeting tomorrow", "buy groceries", "study for exam", "call mom"
         <br />
-        📸 Or take a photo of your handwritten notes to extract todos automatically!
+        📸 Or upload a photo of your handwritten notes to extract todos automatically!
       </div>
-
-      {showCameraCapture && (
-        <CameraCapture
-          onTodosExtracted={handleTodosExtracted}
-          onClose={() => setShowCameraCapture(false)}
-        />
-      )}
 
       {showImageUpload && (
         <ImageUpload

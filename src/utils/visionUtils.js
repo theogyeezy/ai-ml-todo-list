@@ -78,43 +78,4 @@ export const parseTextToTodos = async (text) => {
   return todoItems.slice(0, 10); // Limit to 10 todos max
 };
 
-export const captureImageFromCamera = () => {
-  return new Promise((resolve, reject) => {
-    navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        facingMode: 'environment', // Use back camera if available
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      } 
-    })
-    .then(stream => {
-      resolve(stream);
-    })
-    .catch(error => {
-      console.error('Error accessing camera:', error);
-      reject(new Error('Camera access denied or unavailable'));
-    });
-  });
-};
-
-export const stopCameraStream = (stream) => {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-  }
-};
-
-export const capturePhotoFromStream = (videoElement) => {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    
-    canvas.width = videoElement.videoWidth;
-    canvas.height = videoElement.videoHeight;
-    
-    context.drawImage(videoElement, 0, 0);
-    
-    canvas.toBlob((blob) => {
-      resolve(blob);
-    }, 'image/jpeg', 0.8);
-  });
-};
+// Camera functions removed - using file upload only

@@ -103,7 +103,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
     <div className="image-upload-overlay">
       <div className="image-upload-modal">
         <div className="upload-header">
-          <h3>📤 Upload Image</h3>
+          <h3>📤 Upload Image or Photo</h3>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
         
@@ -124,6 +124,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
             >
               <div className="upload-icon">📁</div>
               <p>Drop an image here or click to browse</p>
+              <p className="upload-formats">Take a photo with your phone camera app, then upload it here</p>
               <p className="upload-formats">Supports: PNG, JPG, GIF, WebP (max 10MB)</p>
               
               <input
