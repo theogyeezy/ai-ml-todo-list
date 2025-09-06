@@ -4,7 +4,7 @@ import { sessionService } from './authService';
 
 // Configure AWS
 AWS.config.update({
-  region: 'us-east-1',
+  region: 'us-east-2',
   accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
   secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY
 });
