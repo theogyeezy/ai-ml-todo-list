@@ -37,13 +37,18 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: us-east-2
+
+    - name: Create S3 bucket in us-east-2 (if it doesn't exist)
+      run: |
+        aws s3api create-bucket --bucket ai-todo-app-matthew-1757183940-useast2 --region us-east-2 --create-bucket-configuration LocationConstraint=us-east-2 || true
+        aws s3 website s3://ai-todo-app-matthew-1757183940-useast2 --index-document index.html --error-document index.html
 
     - name: Deploy to S3
       run: |
-        aws s3 sync dist/ s3://ai-todo-app-matthew-1757183940 --delete
+        aws s3 sync dist/ s3://ai-todo-app-matthew-1757183940-useast2 --delete
         echo "🚀 Deployment completed successfully!"
-        echo "Live at: http://ai-todo-app-matthew-1757183940.s3-website-us-east-1.amazonaws.com"
+        echo "Live at: http://ai-todo-app-matthew-1757183940-useast2.s3-website-us-east-2.amazonaws.com"
 
     - name: Invalidate CloudFront (optional)
       run: |
