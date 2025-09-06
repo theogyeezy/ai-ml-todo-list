@@ -1,4 +1,5 @@
 import { createWorker } from 'tesseract.js';
+import { categorizeTask, predictPriority, analyzeSentiment, estimateTime } from './aiHelpers';
 
 let worker = null;
 
@@ -23,7 +24,7 @@ export const extractTextFromImage = async (imageFile) => {
   }
 };
 
-export const parseTextToTodos = (text) => {
+export const parseTextToTodos = async (text) => {
   if (!text || text.trim().length === 0) {
     return [];
   }
@@ -51,7 +52,26 @@ export const parseTextToTodos = (text) => {
     line = line.replace(/[|{}[\]]/g, '').trim();
     
     if (line) {
-      todoItems.push(line);
+      // Analyze each todo item with AI immediately
+      const priority = predictPriority(line);
+      const sentiment = analyzeSentiment(line);
+      const timeEstimate = estimateTime(line);
+      let category = 'Personal';
+      
+      try {
+        category = await categorizeTask(line);
+      } catch (error) {
+        console.log('Could not categorize with AI, using default');
+      }
+      
+      todoItems.push({
+        text: line,
+        category,
+        priority,
+        sentiment,
+        timeEstimate,
+        isAnalyzed: true
+      });
     }
   }
 

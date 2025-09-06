@@ -1218,7 +1218,7 @@ h1 {
 
 .extracted-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem;
   background: #f9f9f9;
@@ -1232,11 +1232,38 @@ h1 {
   border-color: #ccc;
 }
 
-.extracted-text {
+.extracted-item-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.extracted-text {
   font-size: 0.95rem;
   color: #333;
   line-height: 1.4;
+}
+
+.extracted-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.extracted-meta .category-badge,
+.extracted-meta .priority-badge,
+.extracted-meta .time-estimate {
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem !important;
+  color: white;
+  font-weight: 500;
+}
+
+.extracted-meta .sentiment-emoji {
+  font-size: 0.9rem;
 }
 
 .add-single-btn {

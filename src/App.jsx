@@ -93,26 +93,41 @@ function App() {
     }
   }, [user]);
 
-  const addTodo = async (text) => {
+  const addTodo = async (text, preAnalyzed = null) => {
     setLoading(true);
     
     try {
-      const priority = predictPriority(text);
-      const sentiment = analyzeSentiment(text);
-      const timeEstimate = estimateTime(text);
-      let category = 'Personal';
+      let todoData;
       
-      if (modelLoaded) {
-        category = await categorizeTask(text);
+      if (preAnalyzed && preAnalyzed.isAnalyzed) {
+        // Use pre-analyzed data from vision extraction
+        todoData = {
+          text,
+          category: preAnalyzed.category,
+          priority: preAnalyzed.priority,
+          sentiment: preAnalyzed.sentiment,
+          timeEstimate: preAnalyzed.timeEstimate
+        };
+        console.log('Using pre-analyzed data from vision:', todoData);
+      } else {
+        // Analyze normally
+        const priority = predictPriority(text);
+        const sentiment = analyzeSentiment(text);
+        const timeEstimate = estimateTime(text);
+        let category = 'Personal';
+        
+        if (modelLoaded) {
+          category = await categorizeTask(text);
+        }
+        
+        todoData = {
+          text,
+          category,
+          priority,
+          sentiment,
+          timeEstimate
+        };
       }
-      
-      const todoData = {
-        text,
-        category,
-        priority,
-        sentiment,
-        timeEstimate
-      };
       
       // Save to DynamoDB
       const savedTodo = await todoService.createTodo(todoData);

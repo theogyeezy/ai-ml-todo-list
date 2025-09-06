@@ -41,14 +41,23 @@ function AddTodo({ addTodo, todos, loading }) {
     setShowImageUpload(false);
   };
 
-  const handleAddExtractedTodo = async (todoText) => {
-    await addTodo(todoText);
-    setExtractedTodos(extractedTodos.filter(todo => todo !== todoText));
+  const handleAddExtractedTodo = async (todoItem) => {
+    // If already analyzed, pass the full data, otherwise just the text
+    if (todoItem.isAnalyzed) {
+      await addTodo(todoItem.text, todoItem);
+    } else {
+      await addTodo(todoItem);
+    }
+    setExtractedTodos(extractedTodos.filter(todo => todo !== todoItem));
   };
 
   const handleAddAllExtractedTodos = async () => {
-    for (const todoText of extractedTodos) {
-      await addTodo(todoText);
+    for (const todoItem of extractedTodos) {
+      if (todoItem.isAnalyzed) {
+        await addTodo(todoItem.text, todoItem);
+      } else {
+        await addTodo(todoItem);
+      }
     }
     setExtractedTodos([]);
   };
@@ -128,7 +137,28 @@ function AddTodo({ addTodo, todos, loading }) {
           <div className="extracted-list">
             {extractedTodos.map((todo, index) => (
               <div key={index} className="extracted-item">
-                <span className="extracted-text">{todo}</span>
+                <div className="extracted-item-content">
+                  <span className="extracted-text">{todo.text || todo}</span>
+                  {todo.isAnalyzed && (
+                    <div className="extracted-meta">
+                      <span className="category-badge" style={{fontSize: '0.7rem'}}>
+                        {todo.category}
+                      </span>
+                      <span className="priority-badge" style={{
+                        backgroundColor: todo.priority.color,
+                        fontSize: '0.7rem'
+                      }}>
+                        {todo.priority.level}
+                      </span>
+                      <span className="sentiment-emoji" title={todo.sentiment.mood}>
+                        {todo.sentiment.emoji}
+                      </span>
+                      <span className="time-estimate" style={{fontSize: '0.7rem'}}>
+                        ⏱ {todo.timeEstimate.display}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <button
                   className="add-single-btn"
                   onClick={() => handleAddExtractedTodo(todo)}

@@ -49,8 +49,8 @@ function ImageUpload({ onTodosExtracted, onClose }) {
         return;
       }
 
-      // Parse text into todo items
-      const todoItems = parseTextToTodos(extractedText);
+      // Parse text into todo items (with AI analysis)
+      const todoItems = await parseTextToTodos(extractedText);
       
       if (todoItems.length === 0) {
         setError('Could not identify any todo items in the text. The text found was: "' + extractedText.substring(0, 100) + '..."');
