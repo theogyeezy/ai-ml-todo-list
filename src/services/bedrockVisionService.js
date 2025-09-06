@@ -67,7 +67,7 @@ Please provide only the extracted text, nothing else.`
 
     // Invoke Claude 3.5 Sonnet v2 model
     const command = new InvokeModelCommand({
-      modelId: "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      modelId: "anthropic.claude-3-5-sonnet-20240620-v1:0",
       contentType: "application/json",
       body: JSON.stringify(payload),
     });
