@@ -28,6 +28,9 @@ jobs:
       env:
         VITE_AWS_ACCESS_KEY_ID: ${{ secrets.VITE_AWS_ACCESS_KEY_ID }}
         VITE_AWS_SECRET_ACCESS_KEY: ${{ secrets.VITE_AWS_SECRET_ACCESS_KEY }}
+        VITE_BEDROCK_ACCESS_KEY_ID: ${{ secrets.VITE_BEDROCK_ACCESS_KEY_ID }}
+        VITE_BEDROCK_SECRET_ACCESS_KEY: ${{ secrets.VITE_BEDROCK_SECRET_ACCESS_KEY }}
+        VITE_AWS_REGION: ${{ secrets.VITE_AWS_REGION }}
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
