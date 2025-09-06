@@ -1132,6 +1132,34 @@ h1 {
   transform: none;
 }
 
+/* Vision Options */
+.vision-options {
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.auto-add-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.auto-add-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.auto-add-checkbox:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 /* Extracted Todos Section */
 .extracted-todos {
   background: rgba(255, 255, 255, 0.95);
@@ -1140,6 +1168,28 @@ h1 {
   margin: 1rem 0;
   border: 2px solid #4CAF50;
   animation: slideIn 0.3s ease-out;
+}
+
+.extracted-todos.highlighted {
+  border: 3px solid #ff9900;
+  box-shadow: 0 0 20px rgba(255, 153, 0, 0.3);
+  animation: slideIn 0.3s ease-out, glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 153, 0, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(255, 153, 0, 0.5); }
+}
+
+.extracted-warning {
+  background: linear-gradient(135deg, #ff9900, #ff6b6b);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
 }
 
 @keyframes slideIn {
@@ -1190,14 +1240,32 @@ h1 {
   color: white;
 }
 
+.add-all-btn.pulse {
+  animation: buttonPulse 1.5s ease-in-out infinite;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+@keyframes buttonPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+  }
+}
+
 .add-all-btn:hover:not(:disabled) {
   background: #45a049;
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.05);
 }
 
 .add-all-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  animation: none;
 }
 
 .discard-btn {

@@ -9,9 +9,28 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showCameraCapture, setShowCameraCapture] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
-  const [extractedTodos, setExtractedTodos] = useState([]);
+  const [extractedTodos, setExtractedTodos] = useState(() => {
+    // Load from localStorage on mount
+    const saved = localStorage.getItem('extractedTodos');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [autoAddExtracted, setAutoAddExtracted] = useState(() => {
+    // Load preference from localStorage
+    const saved = localStorage.getItem('autoAddExtracted');
+    return saved === 'true';
+  });
   const typingTimeoutRef = useRef(null);
 
+  // Save extracted todos to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('extractedTodos', JSON.stringify(extractedTodos));
+  }, [extractedTodos]);
+  
+  // Save auto-add preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('autoAddExtracted', autoAddExtracted.toString());
+  }, [autoAddExtracted]);
+  
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -45,10 +64,26 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
     setShowSuggestions(false);
   };
 
-  const handleTodosExtracted = (todoItems) => {
+  const handleTodosExtracted = async (todoItems) => {
     setExtractedTodos(todoItems);
     setShowCameraCapture(false);
     setShowImageUpload(false);
+    
+    // Auto-add if option is enabled
+    if (autoAddExtracted && todoItems.length > 0) {
+      console.log(`Auto-adding ${todoItems.length} extracted todos...`);
+      for (const todoItem of todoItems) {
+        if (todoItem.isAnalyzed) {
+          await addTodo(todoItem.text, todoItem);
+        } else {
+          await addTodo(todoItem);
+        }
+      }
+      setExtractedTodos([]);
+      console.log('All extracted todos have been added!');
+    } else if (todoItems.length > 0) {
+      console.log(`Successfully extracted ${todoItems.length} todos. Click "Add All" or add them individually.`);
+    }
   };
 
   const handleAddExtractedTodo = async (todoItem) => {
@@ -146,14 +181,28 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
           📤 Upload Image
         </button>
       </div>
+      
+      <div className="vision-options">
+        <label className="auto-add-checkbox">
+          <input
+            type="checkbox"
+            checked={autoAddExtracted}
+            onChange={(e) => setAutoAddExtracted(e.target.checked)}
+          />
+          <span>Auto-add extracted todos immediately</span>
+        </label>
+      </div>
 
       {extractedTodos.length > 0 && (
-        <div className="extracted-todos">
+        <div className="extracted-todos highlighted">
+          <div className="extracted-warning">
+            ⚠️ Review extracted todos below - they won't be saved until you click "Add"!
+          </div>
           <div className="extracted-header">
             <h3>📝 Extracted Todos ({extractedTodos.length})</h3>
             <div className="extracted-actions">
               <button 
-                className="add-all-btn"
+                className="add-all-btn pulse"
                 onClick={handleAddAllExtractedTodos}
                 disabled={loading}
               >
