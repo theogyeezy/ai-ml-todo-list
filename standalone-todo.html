@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Todo List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #e0e7ff, #c7d2fe);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem;
+        }
+        
+        .app {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .add-todo-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .todo-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .add-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ai-hint {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .todo-list {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-height: 200px;
+        }
+        
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f7f7f7;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .todo-item.high-priority {
+            border-left-color: #ff9900;
+        }
+        
+        .todo-item.urgent-priority {
+            border-left-color: #ff4444;
+        }
+        
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .todo-content {
+            flex: 1;
+        }
+        
+        .todo-text {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: #999;
+            opacity: 0.7;
+        }
+        
+        .todo-metadata {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .category-badge {
+            background: #9C27B0;
+        }
+        
+        .priority-badge {
+            background: #2196F3;
+            text-transform: uppercase;
+        }
+        
+        .time-badge {
+            background: #607D8B;
+        }
+        
+        .sentiment-badge {
+            background: #4CAF50;
+        }
+        
+        .delete-btn {
+            padding: 0.5rem 1rem;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .delete-btn:hover {
+            background: #ff5252;
+        }
+        
+        .empty-message {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>🤖 AI-Powered Todo List</h1>
+        
+        <form class="add-todo-form" id="todoForm">
+            <input 
+                type="text" 
+                class="todo-input" 
+                id="todoInput" 
+                placeholder="Enter a new todo... (AI will analyze it!)"
+                required
+            >
+            <button type="submit" class="add-btn">Add Todo</button>
+        </form>
+        
+        <div class="ai-hint">
+            💡 Try: "urgent meeting tomorrow", "buy groceries", "study for exam", "call mom"
+        </div>
+        
+        <div class="todo-list" id="todoList">
+            <p class="empty-message">No todos yet. Add one above!</p>
+        </div>
+    </div>
+
+    <script>
+        // Simple AI-like analysis functions (no external dependencies)
+        function analyzeTodo(text) {
+            const lowerText = text.toLowerCase();
+            
+            // Category detection
+            let category = 'Personal';
+            if (lowerText.includes('meeting') || lowerText.includes('work') || lowerText.includes('email') || lowerText.includes('project')) {
+                category = 'Work';
+            } else if (lowerText.includes('buy') || lowerText.includes('shop') || lowerText.includes('groceries')) {
+                category = 'Shopping';
+            } else if (lowerText.includes('study') || lowerText.includes('learn') || lowerText.includes('homework') || lowerText.includes('exam')) {
+                category = 'Education';
+            } else if (lowerText.includes('gym') || lowerText.includes('doctor') || lowerText.includes('exercise')) {
+                category = 'Health';
+            } else if (lowerText.includes('pay') || lowerText.includes('bill') || lowerText.includes('bank')) {
+                category = 'Finance';
+            } else if (lowerText.includes('clean') || lowerText.includes('fix') || lowerText.includes('laundry')) {
+                category = 'Home';
+            }
+            
+            // Priority detection
+            let priority = 'normal';
+            let priorityClass = '';
+            if (lowerText.includes('urgent') || lowerText.includes('asap') || lowerText.includes('immediately')) {
+                priority = 'urgent';
+                priorityClass = 'urgent-priority';
+            } else if (lowerText.includes('important') || lowerText.includes('deadline') || lowerText.includes('tomorrow')) {
+                priority = 'high';
+                priorityClass = 'high-priority';
+            }
+            
+            // Time estimation
+            let timeEstimate = '30m';
+            if (lowerText.includes('meeting')) timeEstimate = '1h';
+            else if (lowerText.includes('quick')) timeEstimate = '15m';
+            else if (lowerText.includes('groceries')) timeEstimate = '45m';
+            else if (lowerText.includes('study')) timeEstimate = '2h';
+            else if (lowerText.includes('clean')) timeEstimate = '45m';
+            
+            // Sentiment
+            let sentiment = '😐';
+            if (lowerText.includes('fun') || lowerText.includes('party') || lowerText.includes('friend')) {
+                sentiment = '😊';
+            } else if (lowerText.includes('urgent') || lowerText.includes('deadline') || lowerText.includes('stress')) {
+                sentiment = '😰';
+            } else if (lowerText.includes('relax') || lowerText.includes('easy')) {
+                sentiment = '😌';
+            }
+            
+            return { category, priority, priorityClass, timeEstimate, sentiment };
+        }
+        
+        let todos = [];
+        
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            
+            if (todos.length === 0) {
+                todoList.innerHTML = '<p class="empty-message">No todos yet. Add one above!</p>';
+                return;
+            }
+            
+            todoList.innerHTML = todos.map(todo => `
+                <div class="todo-item ${todo.priorityClass}">
+                    <input 
+                        type="checkbox" 
+                        class="todo-checkbox" 
+                        ${todo.completed ? 'checked' : ''}
+                        onchange="toggleTodo('${todo.id}')"
+                    >
+                    <div class="todo-content">
+                        <div class="todo-text ${todo.completed ? 'completed' : ''}">
+                            ${todo.text}
+                        </div>
+                        <div class="todo-metadata">
+                            <span class="badge category-badge">${todo.category}</span>
+                            <span class="badge priority-badge">${todo.priority}</span>
+                            <span class="badge time-badge">⏱️ ${todo.timeEstimate}</span>
+                            <span class="badge sentiment-badge">${todo.sentiment}</span>
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteTodo('${todo.id}')">Delete</button>
+                </div>
+            `).join('');
+        }
+        
+        function addTodo(text) {
+            const analysis = analyzeTodo(text);
+            const todo = {
+                id: Date.now().toString(),
+                text: text,
+                completed: false,
+                ...analysis
+            };
+            todos.push(todo);
+            renderTodos();
+        }
+        
+        function toggleTodo(id) {
+            todos = todos.map(todo => 
+                todo.id === id ? { ...todo, completed: !todo.completed } : todo
+            );
+            renderTodos();
+        }
+        
+        function deleteTodo(id) {
+            todos = todos.filter(todo => todo.id !== id);
+            renderTodos();
+        }
+        
+        document.getElementById('todoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('todoInput');
+            if (input.value.trim()) {
+                addTodo(input.value);
+                input.value = '';
+            }
+        });
+        
+        // Add some example todos
+        addTodo('Urgent meeting with client tomorrow at 2pm');
+        addTodo('Buy groceries for dinner');
+        addTodo('Study machine learning concepts');
+    </script>
+</body>
+</html>
