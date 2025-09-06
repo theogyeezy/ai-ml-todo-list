@@ -5,6 +5,7 @@ import AIInsights from './components/AIInsights';
 import AuthForm from './components/AuthForm';
 import UserProfile from './components/UserProfile';
 import AdminDashboard from './components/AdminDashboard';
+import SharedListSelector from './components/SharedListSelector';
 import { 
   categorizeTask, 
   predictPriority, 
@@ -23,6 +24,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
   const [isUserTyping, setIsUserTyping] = useState(false);
+  const [currentSharedListId, setCurrentSharedListId] = useState(null);
 
   // Check for existing user session and refresh user data
   useEffect(() => {
@@ -51,24 +53,35 @@ function App() {
 
   // TensorFlow model loading removed - Claude AI handles all analysis
 
-  // Load todos when user changes
+  // Load todos when user or shared list changes
   useEffect(() => {
     if (user) {
-      const loadTodos = async () => {
-        try {
-          setDataLoading(true);
-          const savedTodos = await todoService.getTodos();
-          setTodos(savedTodos);
-          console.log('Loaded', savedTodos.length, 'todos for', user.name);
-        } catch (error) {
-          console.error('Error loading todos:', error);
-        } finally {
-          setDataLoading(false);
-        }
-      };
       loadTodos();
     }
-  }, [user]);
+  }, [user, currentSharedListId]);
+
+  const loadTodos = async () => {
+    try {
+      setDataLoading(true);
+      let savedTodos;
+      
+      if (currentSharedListId) {
+        // Load todos from shared list
+        savedTodos = await todoService.getTodosInSharedList(currentSharedListId);
+        console.log('Loaded', savedTodos.length, 'todos from shared list');
+      } else {
+        // Load personal todos
+        savedTodos = await todoService.getTodos();
+        console.log('Loaded', savedTodos.length, 'personal todos for', user.name);
+      }
+      
+      setTodos(savedTodos);
+    } catch (error) {
+      console.error('Error loading todos:', error);
+    } finally {
+      setDataLoading(false);
+    }
+  };
 
   // Set up periodic user data refresh (every 30 seconds)
   // But skip refresh if user is typing
@@ -116,8 +129,12 @@ function App() {
           category,
           priority,
           sentiment,
-          timeEstimate
+          timeEstimate,
+          sharedListId: currentSharedListId
         };
+      } else {
+        // Add sharedListId to pre-analyzed data
+        todoData.sharedListId = currentSharedListId;
       }
       
       // Save to DynamoDB
@@ -231,6 +248,10 @@ function App() {
     setShowAdmin(false);
   };
 
+  const handleSharedListChange = (listId) => {
+    setCurrentSharedListId(listId);
+  };
+
   // Show authentication form if no user
   if (!user) {
     return <AuthForm onAuthSuccess={handleAuthSuccess} />;
@@ -265,11 +286,10 @@ function App() {
         onLogout={handleLogout}
         onShowAdmin={handleShowAdmin}
       />
-      {!modelLoaded && (
-        <div className="model-loading">
-          Loading AI models... This may take a few seconds on first load.
-        </div>
-      )}
+      <SharedListSelector 
+        onListChange={handleSharedListChange}
+        currentListId={currentSharedListId}
+      />
       <AddTodo 
         addTodo={addTodo} 
         todos={todos} 

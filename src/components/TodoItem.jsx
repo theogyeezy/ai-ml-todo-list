@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import SubtaskList from './SubtaskList';
 
 function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showSubtasks, setShowSubtasks] = useState(false);
+  const [subtasksCount, setSubtasksCount] = useState(0);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -39,6 +42,10 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
     } else if (e.key === 'Escape') {
       handleCancel();
     }
+  };
+
+  const handleSubtasksChange = (subtasks) => {
+    setSubtasksCount(subtasks.length);
   };
 
   return (
@@ -88,6 +95,15 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
             <span className="time-estimate">
               ⏱️ {todo.timeEstimate?.display}
             </span>
+            {!todo.parentTodoId && (
+              <button 
+                className="subtasks-toggle"
+                onClick={() => setShowSubtasks(!showSubtasks)}
+                title={showSubtasks ? 'Hide subtasks' : 'Show subtasks'}
+              >
+                📋 {subtasksCount > 0 ? `${subtasksCount}` : 'Subtasks'} {showSubtasks ? '▲' : '▼'}
+              </button>
+            )}
           </div>
         )}
         {isEditing && (
@@ -133,6 +149,14 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
           Delete
         </button>
       </div>
+      {!todo.parentTodoId && showSubtasks && (
+        <div className="subtasks-section">
+          <SubtaskList 
+            parentTodoId={todo.todoId || todo.id}
+            onSubtasksChange={handleSubtasksChange}
+          />
+        </div>
+      )}
     </div>
   );
 }

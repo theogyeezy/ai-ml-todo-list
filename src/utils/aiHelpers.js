@@ -294,3 +294,70 @@ export const splitMultipleTodos = (text) => {
     todo.charAt(0).toUpperCase() + todo.slice(1).toLowerCase()
   );
 };
+
+// Enhanced helper to suggest subtasks using Claude AI
+export const suggestSubtasksWithAI = async (parentTaskText) => {
+  try {
+    const { analyzeWithClaude } = await import('../services/bedrockTextService');
+    
+    const systemPrompt = `You are an expert at breaking down complex tasks into manageable subtasks. Analyze the given task and suggest 3-5 specific, actionable subtasks that would help complete the main task. Return only a JSON array of subtask strings, nothing else.`;
+    
+    const prompt = `Break this task into subtasks: "${parentTaskText}"`;
+    
+    const response = await analyzeWithClaude(prompt, systemPrompt);
+    
+    try {
+      const subtasks = JSON.parse(response);
+      if (Array.isArray(subtasks)) {
+        return subtasks.slice(0, 5); // Limit to 5 subtasks max
+      }
+    } catch (parseError) {
+      console.log('Could not parse AI subtask suggestions, using fallback');
+    }
+    
+    // Fallback to basic keyword-based subtask generation
+    return generateBasicSubtasks(parentTaskText);
+    
+  } catch (error) {
+    console.error('AI subtask suggestion failed:', error);
+    return generateBasicSubtasks(parentTaskText);
+  }
+};
+
+// Basic subtask generation fallback
+const generateBasicSubtasks = (taskText) => {
+  const lowerText = taskText.toLowerCase();
+  
+  // Common task patterns and their typical subtasks
+  const taskPatterns = [
+    {
+      keywords: ['plan', 'organize', 'prepare'],
+      subtasks: ['Research requirements', 'Create outline', 'Set timeline', 'Gather resources']
+    },
+    {
+      keywords: ['write', 'create', 'develop'],
+      subtasks: ['Draft initial version', 'Review and edit', 'Get feedback', 'Finalize']
+    },
+    {
+      keywords: ['meeting', 'call', 'interview'],
+      subtasks: ['Prepare agenda', 'Send invites', 'Gather materials', 'Follow up afterwards']
+    },
+    {
+      keywords: ['buy', 'purchase', 'shop'],
+      subtasks: ['Make shopping list', 'Check prices', 'Go to store', 'Compare options']
+    },
+    {
+      keywords: ['learn', 'study', 'research'],
+      subtasks: ['Find resources', 'Take notes', 'Practice exercises', 'Test understanding']
+    }
+  ];
+  
+  for (const pattern of taskPatterns) {
+    if (pattern.keywords.some(keyword => lowerText.includes(keyword))) {
+      return pattern.subtasks.slice(0, 3);
+    }
+  }
+  
+  // Generic fallback subtasks
+  return ['Start the task', 'Complete the main work', 'Review and finish'];
+};
