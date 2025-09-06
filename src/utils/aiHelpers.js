@@ -74,8 +74,9 @@ export const predictPriority = (text) => {
   try {
     const doc = nlp(text);
     hasDeadline = doc.has('#Date') || lowerText.includes('tomorrow') || lowerText.includes('today');
-  } catch (error) {
+  } catch (err) {
     // Fallback to simple keyword detection
+    console.error('Error parsing date:', err);
     hasDeadline = lowerText.includes('tomorrow') || lowerText.includes('today') || lowerText.includes('deadline');
   }
   
