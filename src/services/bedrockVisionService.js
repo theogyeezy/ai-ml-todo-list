@@ -65,9 +65,9 @@ Please provide only the extracted text, nothing else.`
       ]
     };
 
-    // Invoke Claude 3 Sonnet model (basic model without inference profile requirements)
+    // Invoke Claude 3.5 Sonnet v2 through cross-region inference profile
     const command = new InvokeModelCommand({
-      modelId: "anthropic.claude-3-sonnet-20240229-v1:0", 
+      modelId: "us.anthropic.claude-3-5-sonnet-20241022-v2:0", 
       contentType: "application/json",
       body: JSON.stringify(payload),
     });
@@ -136,7 +136,7 @@ export const extractTextWithBedrockAlternative = async (imageFile) => {
     };
 
     const command = new InvokeModelCommand({
-      modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
+      modelId: "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
       contentType: "application/json", 
       body: JSON.stringify(payload),
     });
