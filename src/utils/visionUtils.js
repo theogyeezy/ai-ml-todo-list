@@ -1,13 +1,10 @@
-import { createWorker } from 'tesseract.js';
+import { extractTextWithBedrock, extractTextWithBedrockAlternative } from '../services/bedrockVisionService';
 import { categorizeTask, predictPriority, analyzeSentiment, estimateTime } from './aiHelpers';
 
-let worker = null;
-
+// Bedrock doesn't need initialization like Tesseract
 export const initializeOCR = async () => {
-  if (!worker) {
-    worker = await createWorker('eng');
-  }
-  return worker;
+  console.log('Using Amazon Bedrock Claude Vision - no initialization needed');
+  return true;
 };
 
 // Preprocess image for better OCR accuracy
@@ -53,42 +50,43 @@ const preprocessImage = (imageFile) => {
   });
 };
 
-export const extractTextFromImage = async (imageFile, usePreprocessing = true) => {
+export const extractTextFromImage = async (imageFile, tryAlternative = false) => {
   try {
-    if (!worker) {
-      await initializeOCR();
+    console.log('Extracting text with Amazon Bedrock Claude Vision...');
+    
+    let extractedText;
+    
+    if (tryAlternative) {
+      // Try with Claude Haiku (faster alternative)
+      extractedText = await extractTextWithBedrockAlternative(imageFile);
+    } else {
+      // Use Claude Sonnet (primary model)
+      try {
+        extractedText = await extractTextWithBedrock(imageFile);
+      } catch (error) {
+        console.log('Primary model failed, trying alternative...');
+        extractedText = await extractTextWithBedrockAlternative(imageFile);
+      }
     }
     
-    let processedImage = imageFile;
-    
-    if (usePreprocessing) {
-      console.log('Preprocessing image for better OCR...');
-      processedImage = await preprocessImage(imageFile);
+    if (!extractedText || extractedText.trim().length === 0) {
+      throw new Error('No text found in the image. The AI vision model could not detect any readable text.');
     }
     
-    // Configure Tesseract for better handwriting recognition
-    await worker.setParameters({
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,!?-',
-      tessedit_pageseg_mode: '6', // Uniform block of text
-      preserve_interword_spaces: '1'
-    });
+    console.log(`Bedrock extracted text: "${extractedText}"`);
+    return extractedText.trim();
     
-    const { data: { text, confidence } } = await worker.recognize(processedImage);
-    console.log(`OCR confidence: ${confidence}%`);
-    
-    if (confidence < 30) {
-      throw new Error('LOW_CONFIDENCE');
-    }
-    
-    return text.trim();
   } catch (error) {
     console.error('Error extracting text from image:', error);
     
-    if (error.message === 'LOW_CONFIDENCE') {
-      throw new Error('The image quality is too low for accurate text recognition. Try with better lighting or clearer handwriting.');
+    // Re-throw with user-friendly message
+    if (error.message.includes('credentials') || error.message.includes('Access denied')) {
+      throw new Error('AWS credentials not configured properly. Please check your Bedrock access.');
+    } else if (error.message.includes('model')) {
+      throw new Error('AI vision service temporarily unavailable. Please try again in a moment.');
+    } else {
+      throw error; // Preserve original error message
     }
-    
-    throw new Error('Failed to extract text from image');
   }
 };
 

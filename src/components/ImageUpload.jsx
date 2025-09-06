@@ -40,14 +40,14 @@ function ImageUpload({ onTodosExtracted, onClose }) {
     processImage(file);
   };
 
-  const processImage = async (file, usePreprocessing = true) => {
+  const processImage = async (file, tryAlternative = false) => {
     try {
       setIsProcessing(true);
       setError(null);
       setExtractedText('');
 
-      // Extract text from image
-      const text = await extractTextFromImage(file, usePreprocessing);
+      // Extract text from image using Bedrock Claude Vision
+      const text = await extractTextFromImage(file, tryAlternative);
       setExtractedText(text);
       
       if (!text || text.trim().length === 0) {
@@ -74,11 +74,13 @@ function ImageUpload({ onTodosExtracted, onClose }) {
     } catch (error) {
       console.error('Error processing image:', error);
       
-      if (error.message.includes('low quality') || error.message.includes('LOW_CONFIDENCE')) {
-        setError(error.message + ' Try the manual input option below.');
+      if (error.message.includes('credentials') || error.message.includes('AWS')) {
+        setError('AWS Bedrock access issue. Please check your credentials and try again.');
+      } else if (error.message.includes('model') || error.message.includes('service')) {
+        setError('AI vision service temporarily unavailable. Try the manual input option below.');
         setShowManualInput(true);
       } else {
-        setError('Failed to process the image. Please try again or use manual input.');
+        setError(error.message + ' You can use manual input as a fallback.');
         setShowManualInput(true);
       }
     } finally {
@@ -109,13 +111,13 @@ function ImageUpload({ onTodosExtracted, onClose }) {
     }
   };
 
-  const handleRetryWithPreprocessing = () => {
+  const handleRetryWithAlternative = () => {
     if (previewImage) {
-      // Get the original file from the preview
+      // Get the original file from the preview and try with alternative model
       fetch(previewImage)
         .then(r => r.blob())
         .then(blob => {
-          processImage(new File([blob], "image.png", { type: blob.type }), false);
+          processImage(new File([blob], "image.png", { type: blob.type }), true);
         });
     }
   };
@@ -164,8 +166,8 @@ function ImageUpload({ onTodosExtracted, onClose }) {
             <div className="error-message">
               {error}
               {previewImage && (
-                <button onClick={handleRetryWithPreprocessing} className="retry-btn">
-                  Try Different Processing
+                <button onClick={handleRetryWithAlternative} className="retry-btn">
+                  Try Alternative AI Model
                 </button>
               )}
             </div>
@@ -220,9 +222,9 @@ function ImageUpload({ onTodosExtracted, onClose }) {
           
           {isProcessing && (
             <div className="processing-message">
-              <div className="processing-spinner">🔄</div>
-              <p>Processing image and extracting text...</p>
-              <p className="processing-note">This may take a few seconds</p>
+              <div className="processing-spinner">🤖</div>
+              <p>AI Vision analyzing your image...</p>
+              <p className="processing-note">Using Amazon Bedrock Claude Vision</p>
             </div>
           )}
           
@@ -261,14 +263,14 @@ function ImageUpload({ onTodosExtracted, onClose }) {
           )}
 
           <div className="upload-tips">
-            <h4>💡 Tips for better results:</h4>
+            <h4>🤖 AI Vision powered by Amazon Bedrock:</h4>
             <ul>
-              <li><strong>Use high-contrast images</strong> (dark text on light background)</li>
-              <li><strong>Write clearly</strong> - print letters work better than cursive</li>
-              <li><strong>Good lighting</strong> - avoid shadows and glare</li>
-              <li><strong>Hold steady</strong> - avoid blurry photos</li>
-              <li><strong>One todo per line</strong> - use bullet points or numbers</li>
-              <li>If OCR fails, use the manual input option</li>
+              <li><strong>Handles messy handwriting</strong> - Claude AI can read even poor handwriting</li>
+              <li><strong>Works with any lighting</strong> - Advanced vision model adapts to conditions</li>
+              <li><strong>Multiple formats</strong> - Print, cursive, typed text, or mixed content</li>
+              <li><strong>Smart interpretation</strong> - AI understands context and todo patterns</li>
+              <li><strong>Dual models</strong> - Sonnet for accuracy, Haiku for speed</li>
+              <li>Manual fallback available if needed</li>
             </ul>
           </div>
         </div>
