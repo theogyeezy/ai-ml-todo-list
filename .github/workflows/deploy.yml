@@ -60,9 +60,10 @@ jobs:
 
     - name: Deploy to S3
       run: |
-        aws s3 sync dist/ s3://ai-todo-app-matthew-1757183940-useast2 --delete
+        aws s3 sync dist/ s3://ai-todo-app-matthew-1757183940-useast2 --delete --acl public-read
         echo "🚀 Deployment completed successfully!"
-        echo "Live at: http://ai-todo-app-matthew-1757183940-useast2.s3-website-us-east-2.amazonaws.com"
+        echo "Primary URL: http://ai-todo-app-matthew-1757183940-useast2.s3-website-us-east-2.amazonaws.com"
+        echo "Backup URL: https://ai-todo-app-matthew-1757183940-useast2.s3.us-east-2.amazonaws.com/index.html"
 
     - name: Invalidate CloudFront (optional)
       run: |
