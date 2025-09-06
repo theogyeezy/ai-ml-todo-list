@@ -64,19 +64,55 @@ export const todoService = {
 
   // Update a todo
   async updateTodo(todoId, updates) {
+    // Build update expression dynamically based on what's being updated
+    let updateExpression = 'SET updatedAt = :updatedAt';
+    const expressionAttributeValues = {
+      ':updatedAt': new Date().toISOString()
+    };
+
+    // Add fields to update
+    if (updates.text !== undefined) {
+      updateExpression += ', #text = :text';
+      expressionAttributeValues[':text'] = updates.text;
+    }
+    if (updates.completed !== undefined) {
+      updateExpression += ', completed = :completed';
+      expressionAttributeValues[':completed'] = updates.completed;
+    }
+    if (updates.category !== undefined) {
+      updateExpression += ', category = :category';
+      expressionAttributeValues[':category'] = updates.category;
+    }
+    if (updates.priority !== undefined) {
+      updateExpression += ', priority = :priority';
+      expressionAttributeValues[':priority'] = updates.priority;
+    }
+    if (updates.sentiment !== undefined) {
+      updateExpression += ', sentiment = :sentiment';
+      expressionAttributeValues[':sentiment'] = updates.sentiment;
+    }
+    if (updates.timeEstimate !== undefined) {
+      updateExpression += ', timeEstimate = :timeEstimate';
+      expressionAttributeValues[':timeEstimate'] = updates.timeEstimate;
+    }
+
     const params = {
       TableName: TABLE_NAME,
       Key: {
         userId: sessionService.getUser()?.userId || 'anonymous',
         todoId: todoId
       },
-      UpdateExpression: 'SET completed = :completed, updatedAt = :updatedAt',
-      ExpressionAttributeValues: {
-        ':completed': updates.completed,
-        ':updatedAt': new Date().toISOString()
-      },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
       ReturnValues: 'ALL_NEW'
     };
+
+    // Add ExpressionAttributeNames if updating text (reserved word in DynamoDB)
+    if (updates.text !== undefined) {
+      params.ExpressionAttributeNames = {
+        '#text': 'text'
+      };
+    }
 
     try {
       const result = await dynamodb.update(params).promise();

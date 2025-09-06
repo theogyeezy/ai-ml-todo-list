@@ -169,6 +169,44 @@ function App() {
     }
   };
 
+  const updateTodoText = async (id, newText) => {
+    try {
+      const todo = todos.find(t => t.todoId === id);
+      if (!todo) return;
+      
+      console.log('Re-analyzing todo with AI:', newText);
+      
+      // Re-analyze with AI
+      const priority = predictPriority(newText);
+      const sentiment = analyzeSentiment(newText);
+      const timeEstimate = estimateTime(newText);
+      let category = 'Personal';
+      
+      if (modelLoaded) {
+        category = await categorizeTask(newText);
+      }
+      
+      // Update todo with new text and AI analysis
+      const updatedTodo = await todoService.updateTodo(id, {
+        text: newText,
+        category,
+        priority,
+        sentiment,
+        timeEstimate,
+        completed: todo.completed
+      });
+      
+      setTodos(todos.map(t =>
+        t.todoId === id ? updatedTodo : t
+      ));
+      
+      console.log('Todo re-analyzed and updated:', updatedTodo);
+    } catch (error) {
+      console.error('Error updating todo text:', error);
+      throw error; // Propagate error to TodoItem component
+    }
+  };
+
   const deleteTodo = async (id) => {
     try {
       await todoService.deleteTodo(id);
@@ -259,6 +297,7 @@ function App() {
         todos={todos}
         toggleTodo={toggleTodo}
         deleteTodo={deleteTodo}
+        updateTodo={updateTodoText}
       />
       <div className="footer-info">
         📊 {todos.length} total todos | ☁️ Saved to AWS DynamoDB | 👤 {user.name}

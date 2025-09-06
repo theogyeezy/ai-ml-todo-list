@@ -1,41 +1,138 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-function TodoItem({ todo, toggleTodo, deleteTodo }) {
+function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(todo.text);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditText(todo.text);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditText(todo.text);
+  };
+
+  const handleSave = async () => {
+    if (editText.trim() && editText !== todo.text) {
+      setIsUpdating(true);
+      try {
+        await updateTodo(todo.todoId || todo.id, editText.trim());
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Error updating todo:', error);
+        alert('Failed to update todo. Please try again.');
+      } finally {
+        setIsUpdating(false);
+      }
+    } else if (editText.trim() === todo.text) {
+      setIsEditing(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSave();
+    } else if (e.key === 'Escape') {
+      handleCancel();
+    }
+  };
+
   return (
-    <div className="todo-item" style={{ borderLeft: `4px solid ${todo.priority?.color || '#2196F3'}` }}>
+    <div className={`todo-item ${isUpdating ? 'updating' : ''}`} style={{ borderLeft: `4px solid ${todo.priority?.color || '#2196F3'}` }}>
       <input
         type="checkbox"
         checked={todo.completed}
         onChange={() => toggleTodo(todo.todoId || todo.id)}
         className="todo-checkbox"
+        disabled={isEditing || isUpdating}
       />
       <div className="todo-content">
         <div className="todo-header">
-          <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>
-            {todo.text}
-          </span>
-          <span className="sentiment-emoji" title={`Mood: ${todo.sentiment?.mood}`}>
-            {todo.sentiment?.emoji}
-          </span>
+          {isEditing ? (
+            <input
+              type="text"
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="todo-edit-input"
+              autoFocus
+              disabled={isUpdating}
+            />
+          ) : (
+            <span 
+              className={`todo-text ${todo.completed ? 'completed' : ''}`}
+              onDoubleClick={!todo.completed ? handleEdit : undefined}
+              title={!todo.completed ? "Double-click to edit" : ""}
+            >
+              {todo.text}
+            </span>
+          )}
+          {!isEditing && (
+            <span className="sentiment-emoji" title={`Mood: ${todo.sentiment?.mood}`}>
+              {todo.sentiment?.emoji}
+            </span>
+          )}
         </div>
-        <div className="todo-metadata">
-          <span className="category-badge" style={{ backgroundColor: getCategoryColor(todo.category) }}>
-            {todo.category}
-          </span>
-          <span className="priority-badge" style={{ backgroundColor: todo.priority?.color }}>
-            {todo.priority?.level}
-          </span>
-          <span className="time-estimate">
-            ⏱️ {todo.timeEstimate?.display}
-          </span>
-        </div>
+        {!isEditing && (
+          <div className="todo-metadata">
+            <span className="category-badge" style={{ backgroundColor: getCategoryColor(todo.category) }}>
+              {todo.category}
+            </span>
+            <span className="priority-badge" style={{ backgroundColor: todo.priority?.color }}>
+              {todo.priority?.level}
+            </span>
+            <span className="time-estimate">
+              ⏱️ {todo.timeEstimate?.display}
+            </span>
+          </div>
+        )}
+        {isEditing && (
+          <div className="edit-actions">
+            <button 
+              className="save-edit-btn" 
+              onClick={handleSave}
+              disabled={isUpdating || !editText.trim()}
+            >
+              {isUpdating ? '🔄' : '✓'} Save
+            </button>
+            <button 
+              className="cancel-edit-btn" 
+              onClick={handleCancel}
+              disabled={isUpdating}
+            >
+              ✕ Cancel
+            </button>
+          </div>
+        )}
+        {isUpdating && (
+          <div className="updating-message">
+            🤖 Re-analyzing with AI...
+          </div>
+        )}
       </div>
-      <button
-        onClick={() => deleteTodo(todo.todoId || todo.id)}
-        className="delete-btn"
-      >
-        Delete
-      </button>
+      <div className="todo-actions">
+        {!isEditing && !todo.completed && (
+          <button
+            onClick={handleEdit}
+            className="edit-btn"
+            title="Edit todo"
+            disabled={isUpdating}
+          >
+            ✏️
+          </button>
+        )}
+        <button
+          onClick={() => deleteTodo(todo.todoId || todo.id)}
+          className="delete-btn"
+          disabled={isEditing || isUpdating}
+        >
+          Delete
+        </button>
+      </div>
     </div>
   );
 }
