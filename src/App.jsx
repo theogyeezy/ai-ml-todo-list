@@ -6,7 +6,6 @@ import AuthForm from './components/AuthForm';
 import UserProfile from './components/UserProfile';
 import AdminDashboard from './components/AdminDashboard';
 import { 
-  initializeModel, 
   categorizeTask, 
   predictPriority, 
   analyzeSentiment, 
@@ -18,7 +17,7 @@ import './App.css';
 
 function App() {
   const [todos, setTodos] = useState([]);
-  const [modelLoaded, setModelLoaded] = useState(false);
+  // TensorFlow model loading removed - using Claude for all AI
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
   const [user, setUser] = useState(null);
@@ -50,19 +49,7 @@ function App() {
     }
   };
 
-  // Load AI model
-  useEffect(() => {
-    const loadModel = async () => {
-      try {
-        await initializeModel();
-        setModelLoaded(true);
-        console.log('AI Model loaded successfully!');
-      } catch (error) {
-        console.error('Error loading model:', error);
-      }
-    };
-    loadModel();
-  }, []);
+  // TensorFlow model loading removed - Claude AI handles all analysis
 
   // Load todos when user changes
   useEffect(() => {
@@ -116,14 +103,13 @@ function App() {
         console.log('Using pre-analyzed data from vision:', todoData);
       } else {
         // Analyze normally
-        const priority = predictPriority(text);
-        const sentiment = analyzeSentiment(text);
-        const timeEstimate = estimateTime(text);
+        const priority = await predictPriority(text);
+        const sentiment = await analyzeSentiment(text);
+        const timeEstimate = await estimateTime(text);
         let category = 'Personal';
         
-        if (modelLoaded) {
-          category = await categorizeTask(text);
-        }
+        // Always try to categorize with Claude (has built-in fallback)
+        category = await categorizeTask(text);
         
         todoData = {
           text,
@@ -177,14 +163,13 @@ function App() {
       console.log('Re-analyzing todo with AI:', newText);
       
       // Re-analyze with AI
-      const priority = predictPriority(newText);
-      const sentiment = analyzeSentiment(newText);
-      const timeEstimate = estimateTime(newText);
+      const priority = await predictPriority(newText);
+      const sentiment = await analyzeSentiment(newText);
+      const timeEstimate = await estimateTime(newText);
       let category = 'Personal';
       
-      if (modelLoaded) {
-        category = await categorizeTask(newText);
-      }
+      // Always try to categorize with Claude (has built-in fallback)
+      category = await categorizeTask(newText);
       
       // Update todo with new text and AI analysis
       const updatedTodo = await todoService.updateTodo(id, {

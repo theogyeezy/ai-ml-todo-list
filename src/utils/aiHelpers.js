@@ -1,17 +1,6 @@
-import * as tf from '@tensorflow/tfjs';
-import * as use from '@tensorflow-models/universal-sentence-encoder';
 import Sentiment from 'sentiment';
 import Fuse from 'fuse.js';
 import nlp from 'compromise';
-
-let model = null;
-
-export const initializeModel = async () => {
-  if (!model) {
-    model = await use.load();
-  }
-  return model;
-};
 
 const categories = ['Work', 'Personal', 'Shopping', 'Health', 'Education', 'Finance', 'Home'];
 
@@ -52,21 +41,7 @@ export const categorizeTask = async (text) => {
       }
     }
     
-    if (model && maxScore === 0) {
-      try {
-        const embeddings = await model.embed([text]);
-        const categoryEmbeddings = await model.embed(categories);
-        
-        const similarities = await tf.matMul(embeddings, categoryEmbeddings, false, true).data();
-        const maxIndex = similarities.indexOf(Math.max(...similarities));
-        bestCategory = categories[maxIndex];
-        
-        embeddings.dispose();
-        categoryEmbeddings.dispose();
-      } catch (error) {
-        console.error('Error in ML categorization:', error);
-      }
-    }
+    // TensorFlow fallback removed - Claude handles all categorization
     
     return bestCategory;
   }
