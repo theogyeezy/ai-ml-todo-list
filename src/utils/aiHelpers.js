@@ -26,109 +26,152 @@ const categoryKeywords = {
 };
 
 export const categorizeTask = async (text) => {
-  const lowerText = text.toLowerCase();
-  
-  let maxScore = 0;
-  let bestCategory = 'Personal';
-  
-  for (const [category, keywords] of Object.entries(categoryKeywords)) {
-    let score = 0;
-    for (const keyword of keywords) {
-      if (lowerText.includes(keyword)) {
-        score += 1;
+  // Try Claude 3.5 Sonnet v2 first
+  try {
+    const { categorizeTaskWithClaude } = await import('../services/bedrockTextService');
+    return await categorizeTaskWithClaude(text);
+  } catch (error) {
+    console.log('Claude categorization failed, using fallback:', error.message);
+    
+    // Fallback to existing logic (keyword + TensorFlow)
+    const lowerText = text.toLowerCase();
+    
+    let maxScore = 0;
+    let bestCategory = 'Personal';
+    
+    for (const [category, keywords] of Object.entries(categoryKeywords)) {
+      let score = 0;
+      for (const keyword of keywords) {
+        if (lowerText.includes(keyword)) {
+          score += 1;
+        }
+      }
+      if (score > maxScore) {
+        maxScore = score;
+        bestCategory = category;
       }
     }
-    if (score > maxScore) {
-      maxScore = score;
-      bestCategory = category;
+    
+    if (model && maxScore === 0) {
+      try {
+        const embeddings = await model.embed([text]);
+        const categoryEmbeddings = await model.embed(categories);
+        
+        const similarities = await tf.matMul(embeddings, categoryEmbeddings, false, true).data();
+        const maxIndex = similarities.indexOf(Math.max(...similarities));
+        bestCategory = categories[maxIndex];
+        
+        embeddings.dispose();
+        categoryEmbeddings.dispose();
+      } catch (error) {
+        console.error('Error in ML categorization:', error);
+      }
     }
+    
+    return bestCategory;
   }
-  
-  if (model && maxScore === 0) {
-    try {
-      const embeddings = await model.embed([text]);
-      const categoryEmbeddings = await model.embed(categories);
-      
-      const similarities = await tf.matMul(embeddings, categoryEmbeddings, false, true).data();
-      const maxIndex = similarities.indexOf(Math.max(...similarities));
-      bestCategory = categories[maxIndex];
-      
-      embeddings.dispose();
-      categoryEmbeddings.dispose();
-    } catch (error) {
-      console.error('Error in ML categorization:', error);
-    }
-  }
-  
-  return bestCategory;
 };
 
-export const predictPriority = (text) => {
-  const urgentKeywords = ['urgent', 'asap', 'immediately', 'now', 'today', 'emergency', 'critical', 'important'];
-  const highKeywords = ['deadline', 'tomorrow', 'soon', 'priority', 'must', 'need to'];
-  const lowKeywords = ['whenever', 'maybe', 'someday', 'eventually', 'if possible'];
-  
-  const lowerText = text.toLowerCase();
-  
-  let hasDeadline = false;
+export const predictPriority = async (text) => {
+  // Try Claude 3.5 Sonnet v2 first
   try {
-    const doc = nlp(text);
-    hasDeadline = doc.has('#Date') || lowerText.includes('tomorrow') || lowerText.includes('today');
-  } catch (err) {
-    // Fallback to simple keyword detection
-    console.error('Error parsing date:', err);
-    hasDeadline = lowerText.includes('tomorrow') || lowerText.includes('today') || lowerText.includes('deadline');
+    const { predictPriorityWithClaude } = await import('../services/bedrockTextService');
+    const claudePriority = await predictPriorityWithClaude(text);
+    
+    // Convert Claude response to our format
+    const priorityMap = {
+      'High': { level: 'high', score: 3, color: '#ff9900' },
+      'Normal': { level: 'normal', score: 2, color: '#2196F3' },
+      'Low': { level: 'low', score: 1, color: '#4CAF50' }
+    };
+    
+    return priorityMap[claudePriority] || { level: 'normal', score: 2, color: '#2196F3' };
+  } catch (error) {
+    console.log('Claude priority prediction failed, using fallback:', error.message);
+    
+    // Fallback to keyword-based priority prediction
+    const urgentKeywords = ['urgent', 'asap', 'immediately', 'now', 'today', 'emergency', 'critical', 'important'];
+    const highKeywords = ['deadline', 'tomorrow', 'soon', 'priority', 'must', 'need to'];
+    const lowKeywords = ['whenever', 'maybe', 'someday', 'eventually', 'if possible'];
+    
+    const lowerText = text.toLowerCase();
+    
+    let hasDeadline = false;
+    try {
+      const doc = nlp(text);
+      hasDeadline = doc.has('#Date') || lowerText.includes('tomorrow') || lowerText.includes('today');
+    } catch (err) {
+      console.error('Error parsing date:', err);
+      hasDeadline = lowerText.includes('tomorrow') || lowerText.includes('today') || lowerText.includes('deadline');
+    }
+    
+    if (urgentKeywords.some(keyword => lowerText.includes(keyword))) {
+      return { level: 'urgent', score: 4, color: '#ff4444' };
+    }
+    
+    if (highKeywords.some(keyword => lowerText.includes(keyword)) || hasDeadline) {
+      return { level: 'high', score: 3, color: '#ff9900' };
+    }
+    
+    if (lowKeywords.some(keyword => lowerText.includes(keyword))) {
+      return { level: 'low', score: 1, color: '#4CAF50' };
+    }
+    
+    return { level: 'normal', score: 2, color: '#2196F3' };
   }
-  
-  if (urgentKeywords.some(keyword => lowerText.includes(keyword))) {
-    return { level: 'urgent', score: 4, color: '#ff4444' };
-  }
-  
-  if (highKeywords.some(keyword => lowerText.includes(keyword)) || hasDeadline) {
-    return { level: 'high', score: 3, color: '#ff9900' };
-  }
-  
-  if (lowKeywords.some(keyword => lowerText.includes(keyword))) {
-    return { level: 'low', score: 1, color: '#4CAF50' };
-  }
-  
-  return { level: 'normal', score: 2, color: '#2196F3' };
 };
 
 const sentiment = new Sentiment();
 
-export const analyzeSentiment = (text) => {
-  const result = sentiment.analyze(text);
-  
-  let mood = 'neutral';
-  let emoji = '😐';
-  let color = '#9E9E9E';
-  
-  if (result.score > 2) {
-    mood = 'positive';
-    emoji = '😊';
-    color = '#4CAF50';
-  } else if (result.score < -2) {
-    mood = 'negative';
-    emoji = '😟';
-    color = '#f44336';
-  } else if (result.score > 0) {
-    mood = 'slightly positive';
-    emoji = '🙂';
-    color = '#8BC34A';
-  } else if (result.score < 0) {
-    mood = 'slightly negative';
-    emoji = '😕';
-    color = '#FF9800';
+export const analyzeSentiment = async (text) => {
+  // Try Claude 3.5 Sonnet v2 first
+  try {
+    const { analyzeSentimentWithClaude } = await import('../services/bedrockTextService');
+    const claudeResult = await analyzeSentimentWithClaude(text);
+    
+    return {
+      score: claudeResult.score,
+      mood: claudeResult.mood,
+      emoji: claudeResult.emoji,
+      color: claudeResult.color,
+      words: [] // Claude doesn't provide specific words
+    };
+  } catch (error) {
+    console.log('Claude sentiment analysis failed, using fallback:', error.message);
+    
+    // Fallback to sentiment library
+    const result = sentiment.analyze(text);
+    
+    let mood = 'neutral';
+    let emoji = '😐';
+    let color = '#9E9E9E';
+    
+    if (result.score > 2) {
+      mood = 'positive';
+      emoji = '😊';
+      color = '#4CAF50';
+    } else if (result.score < -2) {
+      mood = 'negative';
+      emoji = '😟';
+      color = '#f44336';
+    } else if (result.score > 0) {
+      mood = 'slightly positive';
+      emoji = '🙂';
+      color = '#8BC34A';
+    } else if (result.score < 0) {
+      mood = 'slightly negative';
+      emoji = '😕';
+      color = '#FF9800';
+    }
+    
+    return {
+      score: result.score,
+      mood,
+      emoji,
+      color,
+      words: result.positive.concat(result.negative)
+    };
   }
-  
-  return {
-    score: result.score,
-    mood,
-    emoji,
-    color,
-    words: result.positive.concat(result.negative)
-  };
 };
 
 export const getSuggestions = (currentText, previousTodos) => {
@@ -163,47 +206,56 @@ const taskTimeEstimates = {
   'homework': 60
 };
 
-export const estimateTime = (text) => {
-  const lowerText = text.toLowerCase();
-  let totalMinutes = 30;
-  let matched = false;
-  
-  for (const [task, minutes] of Object.entries(taskTimeEstimates)) {
-    if (lowerText.includes(task)) {
-      totalMinutes = minutes;
-      matched = true;
-      break;
+export const estimateTime = async (text) => {
+  // Try Claude 3.5 Sonnet v2 first
+  try {
+    const { estimateTimeWithClaude } = await import('../services/bedrockTextService');
+    return await estimateTimeWithClaude(text);
+  } catch (error) {
+    console.log('Claude time estimation failed, using fallback:', error.message);
+    
+    // Fallback to existing estimation logic
+    const lowerText = text.toLowerCase();
+    let totalMinutes = 30;
+    let matched = false;
+    
+    for (const [task, minutes] of Object.entries(taskTimeEstimates)) {
+      if (lowerText.includes(task)) {
+        totalMinutes = minutes;
+        matched = true;
+        break;
+      }
     }
-  }
-  
-  const doc = nlp(text);
-  const numbers = doc.values().out('array');
-  if (numbers.length > 0 && !matched) {
-    const firstNumber = parseInt(numbers[0]);
-    if (!isNaN(firstNumber) && firstNumber > 0 && firstNumber < 480) {
-      totalMinutes = firstNumber;
+    
+    const doc = nlp(text);
+    const numbers = doc.values().out('array');
+    if (numbers.length > 0 && !matched) {
+      const firstNumber = parseInt(numbers[0]);
+      if (!isNaN(firstNumber) && firstNumber > 0 && firstNumber < 480) {
+        totalMinutes = firstNumber;
+      }
     }
+    
+    if (lowerText.includes('quick') || lowerText.includes('fast')) {
+      totalMinutes = Math.max(5, totalMinutes * 0.5);
+    } else if (lowerText.includes('long') || lowerText.includes('detailed')) {
+      totalMinutes = totalMinutes * 1.5;
+    }
+    
+    const lengthFactor = text.split(' ').length;
+    if (lengthFactor > 10) {
+      totalMinutes = totalMinutes * 1.2;
+    }
+    
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = Math.round(totalMinutes % 60);
+    
+    return {
+      minutes: Math.round(totalMinutes),
+      display: hours > 0 ? `${hours}h ${mins}m` : `${mins}m`,
+      confidence: matched ? 'high' : 'medium'
+    };
   }
-  
-  if (lowerText.includes('quick') || lowerText.includes('fast')) {
-    totalMinutes = Math.max(5, totalMinutes * 0.5);
-  } else if (lowerText.includes('long') || lowerText.includes('detailed')) {
-    totalMinutes = totalMinutes * 1.5;
-  }
-  
-  const lengthFactor = text.split(' ').length;
-  if (lengthFactor > 10) {
-    totalMinutes = totalMinutes * 1.2;
-  }
-  
-  const hours = Math.floor(totalMinutes / 60);
-  const mins = Math.round(totalMinutes % 60);
-  
-  return {
-    minutes: Math.round(totalMinutes),
-    display: hours > 0 ? `${hours}h ${mins}m` : `${mins}m`,
-    confidence: matched ? 'high' : 'medium'
-  };
 };
 
 // Split multiple todos from a single input
