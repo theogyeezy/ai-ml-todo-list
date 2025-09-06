@@ -57,10 +57,10 @@ export const extractTextFromImage = async (imageFile, tryAlternative = false) =>
     let extractedText;
     
     if (tryAlternative) {
-      // Try with Claude Haiku (faster alternative)
+      // Try with alternative Claude 3.5 Sonnet settings
       extractedText = await extractTextWithBedrockAlternative(imageFile);
     } else {
-      // Use Claude Sonnet (primary model)
+      // Use Claude 3.5 Sonnet (primary model)
       try {
         extractedText = await extractTextWithBedrock(imageFile);
       } catch (error) {

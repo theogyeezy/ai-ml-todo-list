@@ -103,17 +103,17 @@ Please provide only the extracted text, nothing else.`
   }
 };
 
-// Alternative: Extract text using other Bedrock vision models
+// Alternative: Extract text using same Sonnet model with different settings
 export const extractTextWithBedrockAlternative = async (imageFile) => {
   try {
     console.log('Trying alternative Bedrock vision model...');
     
     const base64Image = await imageToBase64(imageFile);
     
-    // Try with Claude 3 Haiku (faster, cheaper alternative)
+    // Try with Claude 3.5 Sonnet (alternative settings)
     const payload = {
       anthropic_version: "bedrock-2023-05-31",
-      max_tokens: 800,
+      max_tokens: 1000,
       messages: [
         {
           role: "user", 

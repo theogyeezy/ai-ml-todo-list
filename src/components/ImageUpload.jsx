@@ -269,7 +269,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
               <li><strong>Works with any lighting</strong> - Advanced vision model adapts to conditions</li>
               <li><strong>Multiple formats</strong> - Print, cursive, typed text, or mixed content</li>
               <li><strong>Smart interpretation</strong> - AI understands context and todo patterns</li>
-              <li><strong>Dual models</strong> - Sonnet for accuracy, Haiku for speed</li>
+              <li><strong>Claude 3.5 Sonnet</strong> - Premium AI model for maximum accuracy</li>
               <li>Manual fallback available if needed</li>
             </ul>
           </div>
