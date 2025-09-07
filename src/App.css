@@ -34,14 +34,14 @@
   
   /* Theme Variables */
   --bg-primary: #667eea;
-  --bg-secondary: rgba(255, 255, 255, 0.95);
-  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-secondary: rgba(255, 255, 255, 0.98);
+  --bg-card: rgba(255, 255, 255, 0.95);
   --bg-overlay: rgba(102, 126, 234, 0.95);
   
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.8);
-  --text-dark: #2c2c2c;
-  --text-muted: #757575;
+  --text-secondary: rgba(255, 255, 255, 0.9);
+  --text-dark: #1a1a1a;
+  --text-muted: #4a4a4a;
   
   /* Typography */
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -77,9 +77,9 @@
   --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.25);
   
   /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.25);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-backdrop: blur(20px);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-backdrop: blur(15px);
 }
 
 /* Reset and Base Styles */
@@ -219,11 +219,12 @@ body {
 }
 
 .btn-secondary {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
-  color: var(--text-primary);
-  border: 1px solid var(--glass-border);
+  color: var(--text-dark);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-weight: var(--font-weight-semibold);
 }
 
 .btn-warning {
@@ -237,9 +238,10 @@ body {
 }
 
 .btn-text {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.2);
   color: var(--text-primary);
   box-shadow: none;
+  font-weight: var(--font-weight-semibold);
 }
 
 .btn-small {
@@ -264,14 +266,15 @@ body {
 .input, .select, .textarea {
   width: 100%;
   padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
   color: var(--text-dark);
   font-family: var(--font-family);
   font-size: 16px;
+  font-weight: var(--font-weight-medium);
   transition: all 0.3s ease;
   box-shadow: var(--shadow-sm);
 }
@@ -291,9 +294,9 @@ body {
 .checkbox {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--glass-border);
+  border: 2px solid rgba(255, 255, 255, 0.6);
   border-radius: var(--radius-sm);
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -543,10 +546,10 @@ body {
 }
 
 .insight-card {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
   text-align: center;
@@ -602,7 +605,7 @@ body {
 }
 
 .user-info:hover {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
 }
@@ -904,10 +907,10 @@ body {
 }
 
 .subtask-item {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
   margin-bottom: var(--space-3);
@@ -983,10 +986,10 @@ body {
 }
 
 .list-info-card {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
@@ -1093,10 +1096,10 @@ body {
 
 /* Extracted Todos - Modern Style */
 .extracted-todos {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   margin-top: var(--space-4);
@@ -1162,10 +1165,10 @@ body {
 }
 
 .hint-content {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: var(--glass-backdrop);
   -webkit-backdrop-filter: var(--glass-backdrop);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
@@ -1194,7 +1197,7 @@ body {
 }
 
 .checkbox-label:hover {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .checkbox-text {

@@ -418,7 +418,10 @@ export const todoService = {
       Key: {
         listId: listId
       },
-      UpdateExpression: 'SET members = :members, permissions = :permissions, updatedAt = :updatedAt',
+      UpdateExpression: 'SET members = :members, #permissions = :permissions, updatedAt = :updatedAt',
+      ExpressionAttributeNames: {
+        '#permissions': 'permissions'
+      },
       ExpressionAttributeValues: {
         ':members': updatedMembers,
         ':permissions': updatedPermissions,
