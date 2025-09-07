@@ -123,7 +123,7 @@ function AdminDashboard({ currentUser, onClose }) {
     return (
       <div className="admin-dashboard">
         <div className="admin-header">
-          <h2>🔧 Admin Dashboard</h2>
+          <h2>Admin Dashboard</h2>
           <button onClick={onClose} className="close-admin">✕</button>
         </div>
         <div className="loading">Loading admin data...</div>
@@ -134,7 +134,7 @@ function AdminDashboard({ currentUser, onClose }) {
   return (
     <div className="admin-dashboard">
       <div className="admin-header">
-        <h2>🔧 Admin Dashboard</h2>
+        <h2>Admin Dashboard</h2>
         <button onClick={onClose} className="close-admin">✕</button>
       </div>
 
@@ -143,13 +143,13 @@ function AdminDashboard({ currentUser, onClose }) {
           className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
           onClick={() => setActiveTab('users')}
         >
-          👥 Users ({users.length})
+          Users ({users.length})
         </button>
         <button 
           className={`tab-btn ${activeTab === 'todos' ? 'active' : ''}`}
           onClick={() => setActiveTab('todos')}
         >
-          📝 All Todos ({allTodos.length})
+          All Todos ({allTodos.length})
         </button>
       </div>
 
@@ -160,7 +160,7 @@ function AdminDashboard({ currentUser, onClose }) {
             {users.map(user => (
               <div key={user.email} className="user-card">
                 <div className="user-info">
-                  <h4>{user.name} {user.isAdmin && '👑'}</h4>
+                  <h4>{user.name} {user.isAdmin && '(Admin)'}</h4>
                   <p>{user.email}</p>
                   <p className="user-status">
                     Status: <span className={user.isActive ? 'active' : 'inactive'}>
@@ -221,7 +221,7 @@ function AdminDashboard({ currentUser, onClose }) {
                         onClick={() => handleDeleteTodo(selectedUser.userId, todo.todoId)}
                         className="delete-todo-btn"
                       >
-                        🗑️
+                        Delete
                       </button>
                     </div>
                   ))}
@@ -263,14 +263,14 @@ function AdminDashboard({ currentUser, onClose }) {
                   <div className="admin-todo-content">
                     <span className={todo.completed ? 'completed' : ''}>{todo.text}</span>
                     <div className="admin-todo-meta">
-                      👤 {user?.name || 'Unknown User'} | {todo.category} | {todo.priority?.level}
+                      {user?.name || 'Unknown User'} | {todo.category} | {todo.priority?.level}
                     </div>
                   </div>
                   <button 
                     onClick={() => handleDeleteTodo(todo.userId, todo.todoId)}
                     className="delete-todo-btn"
                   >
-                    🗑️
+                    Delete
                   </button>
                 </div>
               );

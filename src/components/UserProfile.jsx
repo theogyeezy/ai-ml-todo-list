@@ -32,12 +32,11 @@ function UserProfile({ user, onLogout, onShowAdmin }) {
     return (
       <div className="user-info card" onClick={() => setShowProfile(true)}>
         <div className="user-info-content">
-          <span className="user-avatar">👤</span>
           <span className="user-name">{user.name}</span>
-          {user.isAdmin && <span className="user-badge">👑</span>}
-          <span className="user-status">💾 Cloud Active</span>
+          {user.isAdmin && <span className="badge badge-warning">Admin</span>}
+          <span className="user-status">Cloud Active</span>
         </div>
-        <span className="user-expand-hint">📊</span>
+        <span className="user-expand-hint">▼</span>
       </div>
     );
   }
@@ -45,12 +44,12 @@ function UserProfile({ user, onLogout, onShowAdmin }) {
   return (
     <div className="card user-profile-expanded">
       <div className="profile-header">
-        <h3 className="profile-title">👤 Account Info</h3>
+        <h3 className="profile-title">Account Info</h3>
         <button 
           className="btn btn-icon btn-small close-profile"
           onClick={() => setShowProfile(false)}
         >
-          ✕
+          ×
         </button>
       </div>
       
@@ -58,7 +57,7 @@ function UserProfile({ user, onLogout, onShowAdmin }) {
         <div className="profile-item">
           <span className="profile-label">Name:</span> 
           <span className="profile-value">
-            {user.name} {user.isAdmin && <span className="badge badge-admin">👑 Admin</span>}
+            {user.name} {user.isAdmin && <span className="badge badge-warning">Admin</span>}
           </span>
         </div>
         <div className="profile-item">
@@ -81,21 +80,21 @@ function UserProfile({ user, onLogout, onShowAdmin }) {
           onClick={handleRefreshProfile}
           disabled={refreshing}
         >
-          {refreshing ? '🔄 Refreshing...' : '🔄 Refresh Profile'}
+          {refreshing ? 'Refreshing...' : 'Refresh Profile'}
         </button>
         {user.isAdmin && (
           <button 
             className="btn btn-primary btn-small" 
             onClick={onShowAdmin}
           >
-            🔧 Admin Dashboard
+            Admin Dashboard
           </button>
         )}
         <button 
           className="btn btn-text btn-small logout-btn" 
           onClick={handleLogout}
         >
-          🚪 Sign Out
+          Sign Out
         </button>
       </div>
     </div>

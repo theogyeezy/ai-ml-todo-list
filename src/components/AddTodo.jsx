@@ -158,9 +158,9 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
           />
           <button type="submit" className="btn btn-primary btn-icon" disabled={loading}>
             {loading ? (
-              <span className="loading-spinner">⏳</span>
+              <span className="loading-spinner">...</span>
             ) : (
-              <span>➕</span>
+              <span>+</span>
             )}
           </button>
           {showSuggestions && (
@@ -185,7 +185,6 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
           onClick={() => setShowImageUpload(true)}
           disabled={loading}
         >
-          <span className="btn-icon">📱</span>
           Upload Image
         </button>
         
@@ -203,24 +202,24 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
       {extractedTodos.length > 0 && (
         <div className="card extracted-todos">
           <div className="alert alert-warning">
-            <span className="alert-icon">⚠️</span>
+            <span className="alert-icon">!</span>
             Review extracted todos - they won't be saved until you click "Add"
           </div>
           <div className="extracted-header">
-            <h3 className="extracted-title">📝 Extracted Todos ({extractedTodos.length})</h3>
+            <h3 className="extracted-title">Extracted Todos ({extractedTodos.length})</h3>
             <div className="btn-group">
               <button 
                 className="btn btn-primary btn-small"
                 onClick={handleAddAllExtractedTodos}
                 disabled={loading}
               >
-                ➕ Add All
+                Add All
               </button>
               <button 
                 className="btn btn-text btn-small"
                 onClick={handleDiscardExtracted}
               >
-                🗑️ Discard
+                Discard
               </button>
             </div>
           </div>
@@ -242,8 +241,8 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
                       <span className="extracted-sentiment" title={todo.sentiment.mood}>
                         {todo.sentiment.emoji}
                       </span>
-                      <span className="badge badge-time">
-                        ⏱ {todo.timeEstimate.display}
+                      <span className="badge badge-info">
+                        {todo.timeEstimate.display}
                       </span>
                     </div>
                   )}
@@ -253,7 +252,7 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
                   onClick={() => handleAddExtractedTodo(todo)}
                   disabled={loading}
                 >
-                  ➕
+                  +
                 </button>
               </div>
             ))}
@@ -263,11 +262,10 @@ function AddTodo({ addTodo, todos, loading, onTypingStart, onTypingEnd }) {
       
       <div className="ai-hint">
         <div className="hint-content">
-          <span className="hint-icon">💡</span>
           <div className="hint-text">
             Try: "urgent meeting tomorrow" • "buy groceries" • "study for exam"
             <br />
-            <span className="hint-subtext">📱 Or upload a photo to extract todos automatically</span>
+            <span className="hint-subtext">Or upload a photo to extract todos automatically</span>
           </div>
         </div>
       </div>

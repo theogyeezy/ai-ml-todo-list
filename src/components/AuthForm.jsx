@@ -49,7 +49,7 @@ function AuthForm({ onAuthSuccess }) {
       <div className="card auth-form">
         <div className="auth-header">
           <h2 className="auth-title">
-            {isLogin ? '👋 Welcome Back!' : '✨ Create Account'}
+            {isLogin ? 'Welcome Back!' : 'Create Account'}
           </h2>
           <p className="auth-subtitle">
             {isLogin 
@@ -61,7 +61,7 @@ function AuthForm({ onAuthSuccess }) {
 
         {error && (
           <div className="alert alert-error">
-            <span className="alert-icon">⚠️</span>
+            <span className="alert-icon">!</span>
             {error}
           </div>
         )}
@@ -134,11 +134,11 @@ function AuthForm({ onAuthSuccess }) {
 
         <div className="auth-footer">
           <div className="auth-info-item">
-            <span className="auth-info-icon">🔒</span>
+            <span className="auth-info-icon">Secure</span>
             Your data is securely stored in AWS
           </div>
           <div className="auth-info-item">
-            <span className="auth-info-icon">🤖</span>
+            <span className="auth-info-icon">AI</span>
             AI analysis powered by Claude
           </div>
         </div>

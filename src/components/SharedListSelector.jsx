@@ -110,7 +110,7 @@ function SharedListSelector({ onListChange, currentListId }) {
   return (
     <div className="card shared-list-selector">
       <div className="list-selector-header">
-        <label htmlFor="listSelect" className="form-label">📋 Select List:</label>
+        <label htmlFor="listSelect" className="form-label">Select List:</label>
         <select 
           id="listSelect"
           value={currentListId || ''}
@@ -118,10 +118,10 @@ function SharedListSelector({ onListChange, currentListId }) {
           disabled={loading}
           className="select select-primary"
         >
-          <option value="">🏠 My Personal List</option>
+          <option value="">My Personal List</option>
           {sharedLists.map(list => (
             <option key={list.listId} value={list.listId}>
-              👥 {list.name} {(() => {
+              {list.name} {(() => {
                 const currentUser = JSON.parse(localStorage.getItem('todo-user'));
                 return list.ownerId === currentUser?.userId ? ' (Owner)' : '';
               })()}

@@ -157,7 +157,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
     <div className="image-upload-overlay">
       <div className="image-upload-modal">
         <div className="upload-header">
-          <h3>📤 Upload Image or Photo</h3>
+          <h3>Upload Image or Photo</h3>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
         
@@ -175,7 +175,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
           
           {extractedText && (
             <div className="extracted-text-preview">
-              <h4>📝 Extracted Text:</h4>
+              <h4>Extracted Text:</h4>
               <div className="text-preview">"{extractedText}"</div>
             </div>
           )}
@@ -188,7 +188,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
               onDrop={handleDrop}
               onClick={handleBrowseClick}
             >
-              <div className="upload-icon">📁</div>
+              <div className="upload-icon">Upload</div>
               <p>Drop an image here or click to browse</p>
               <p className="upload-formats">Take a photo with your phone camera app, then upload it here</p>
               <p className="upload-formats">Supports: PNG, JPG, GIF, WebP (max 10MB)</p>
@@ -222,7 +222,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
           
           {isProcessing && (
             <div className="processing-message">
-              <div className="processing-spinner">🤖</div>
+              <div className="processing-spinner">⟳</div>
               <p>AI Vision analyzing your image...</p>
               <p className="processing-note">Using Amazon Bedrock Claude Vision</p>
             </div>
@@ -230,7 +230,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
           
           {showManualInput && (
             <div className="manual-input-section">
-              <h4>✍️ Manual Input (Fallback)</h4>
+              <h4>Manual Input (Fallback)</h4>
               <p>If OCR failed, type your todos manually:</p>
               <textarea
                 value={manualText}
@@ -246,7 +246,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
                   onClick={handleManualSubmit}
                   disabled={isProcessing || !manualText.trim()}
                 >
-                  {isProcessing ? '🔄 Processing...' : '✓ Process Text'}
+                  {isProcessing ? 'Processing...' : 'Process Text'}
                 </button>
                 <button 
                   className="cancel-manual-btn"
@@ -263,7 +263,7 @@ function ImageUpload({ onTodosExtracted, onClose }) {
           )}
 
           <div className="upload-tips">
-            <h4>🤖 AI Vision powered by Amazon Bedrock:</h4>
+            <h4>AI Vision powered by Amazon Bedrock:</h4>
             <ul>
               <li><strong>Handles messy handwriting</strong> - Claude AI can read even poor handwriting</li>
               <li><strong>Works with any lighting</strong> - Advanced vision model adapts to conditions</li>

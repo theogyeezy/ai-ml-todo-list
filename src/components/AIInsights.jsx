@@ -26,9 +26,9 @@ function AIInsights({ todos, totalTime }) {
     const avgScore = incompleteTodos.reduce((sum, todo) => 
       sum + (todo.sentiment?.score || 0), 0) / incompleteTodos.length;
     
-    if (avgScore > 1) return { mood: 'positive', emoji: '😊', message: 'Great vibes today!' };
-    if (avgScore < -1) return { mood: 'stressful', emoji: '😰', message: 'Challenging tasks ahead' };
-    return { mood: 'balanced', emoji: '😌', message: 'Balanced workload' };
+    if (avgScore > 1) return { mood: 'positive', emoji: '+', message: 'Great vibes today!' };
+    if (avgScore < -1) return { mood: 'stressful', emoji: '!', message: 'Challenging tasks ahead' };
+    return { mood: 'balanced', emoji: '=', message: 'Balanced workload' };
   };
 
   const categoryStats = getCategoryStats();
@@ -42,11 +42,11 @@ function AIInsights({ todos, totalTime }) {
   return (
     <div className="card ai-insights">
       <div className="ai-insights-header">
-        <h3 className="insights-title">🧠 AI Insights</h3>
+        <h3 className="insights-title">AI Insights</h3>
       </div>
       <div className="insights-grid">
         <div className="card insight-card">
-          <h4 className="insight-title">📊 Categories</h4>
+          <h4 className="insight-title">Categories</h4>
           <div className="category-list">
             {categoryStats.slice(0, 3).map(([category, count]) => (
               <div key={category} className="stat-item">
@@ -58,7 +58,7 @@ function AIInsights({ todos, totalTime }) {
         </div>
 
         <div className="card insight-card">
-          <h4 className="insight-title">🚨 Priority Overview</h4>
+          <h4 className="insight-title">Priority Overview</h4>
           <div className="priority-bars">
             {priorityStats.urgent > 0 && (
               <div className="priority-item">
@@ -84,7 +84,7 @@ function AIInsights({ todos, totalTime }) {
         </div>
 
         <div className="card insight-card">
-          <h4 className="insight-title">😊 Mood Analysis</h4>
+          <h4 className="insight-title">Mood Analysis</h4>
           <div className="mood-display">
             <span className="mood-emoji">{sentimentOverview.emoji}</span>
             <span className="mood-text">{sentimentOverview.message}</span>
@@ -92,7 +92,7 @@ function AIInsights({ todos, totalTime }) {
         </div>
 
         <div className="card insight-card">
-          <h4 className="insight-title">⏰ Time Estimate</h4>
+          <h4 className="insight-title">Time Estimate</h4>
           <div className="time-display">
             <div className="time-value">
               <span className="time-total">{totalTime}</span>

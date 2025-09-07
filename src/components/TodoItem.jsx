@@ -101,8 +101,8 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
                 <span className="badge badge-priority" style={{ backgroundColor: todo.priority?.color }}>
                   {todo.priority?.level}
                 </span>
-                <span className="badge badge-time">
-                  ⏱️ {todo.timeEstimate?.display}
+                <span className="badge badge-info">
+                  {todo.timeEstimate?.display}
                 </span>
               </div>
               {!todo.parentTodoId && (
@@ -111,7 +111,7 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
                   onClick={() => setShowSubtasks(!showSubtasks)}
                   title={showSubtasks ? 'Hide subtasks' : 'Show subtasks'}
                 >
-                  📋 {subtasksCount > 0 ? `${subtasksCount}` : 'Subtasks'} {showSubtasks ? '▲' : '▼'}
+                  {subtasksCount > 0 ? `${subtasksCount} Subtasks` : 'Subtasks'} {showSubtasks ? '▲' : '▼'}
                 </button>
               )}
             </div>
@@ -124,14 +124,14 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
                 onClick={handleSave}
                 disabled={isUpdating || !editText.trim()}
               >
-                {isUpdating ? '🔄' : '✓'} Save
+                {isUpdating ? 'Saving...' : 'Save'}
               </button>
               <button 
                 className="btn btn-text btn-small" 
                 onClick={handleCancel}
                 disabled={isUpdating}
               >
-                ✕ Cancel
+                Cancel
               </button>
             </div>
           )}
@@ -152,7 +152,7 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
               title="Edit todo"
               disabled={isUpdating}
             >
-              ✏️
+              Edit
             </button>
           )}
           <button
@@ -161,7 +161,7 @@ function TodoItem({ todo, toggleTodo, deleteTodo, updateTodo }) {
             disabled={isEditing || isUpdating}
             title="Delete todo"
           >
-            🗑️
+            Delete
           </button>
         </div>
       </div>

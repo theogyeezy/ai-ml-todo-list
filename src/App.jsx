@@ -258,7 +258,7 @@ function App() {
   if (dataLoading) {
     return (
       <div className="app">
-        <h1>🤖 AI/ML To Do List</h1>
+        <h1>AI/ML To Do List</h1>
         <div className="model-loading">
           Loading your todos from the cloud...
         </div>
@@ -279,7 +279,7 @@ function App() {
   return (
     <div className="app">
       <div className="app-header">
-        <h1 className="app-title">🤖 AI Todo</h1>
+        <h1 className="app-title">AI Todo</h1>
         <UserProfile 
           user={user} 
           onLogout={handleLogout}
@@ -310,11 +310,11 @@ function App() {
       
       <div className="app-footer">
         <div className="footer-stats">
-          <span className="footer-stat">📊 {todos.length} todos</span>
-          <span className="footer-stat">☁️ AWS DynamoDB</span>
-          <span className="footer-stat">👤 {user.name}</span>
+          <span className="footer-stat">{todos.length} todos</span>
+          <span className="footer-stat">AWS DynamoDB</span>
+          <span className="footer-stat">{user.name}</span>
           {isUserTyping && (
-            <span className="footer-stat typing-indicator">✏️ Auto-refresh paused</span>
+            <span className="footer-stat typing-indicator">Auto-refresh paused</span>
           )}
         </div>
       </div>

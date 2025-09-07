@@ -148,7 +148,9 @@ function SubtaskList({ parentTodoId, onSubtasksChange }) {
                     {subtask.category}
                   </span>
                   <span className="badge badge-small badge-time">{subtask.timeEstimate?.display}</span>
-                  <span className="subtask-sentiment">{subtask.sentiment?.emoji}</span>
+                  <span className="subtask-sentiment" title={`Mood: ${subtask.sentiment?.mood}`}>
+                    {subtask.sentiment?.emoji}
+                  </span>
                 </div>
               </div>
             </div>
@@ -157,7 +159,7 @@ function SubtaskList({ parentTodoId, onSubtasksChange }) {
               className="btn btn-icon btn-small delete-subtask-btn"
               title="Delete subtask"
             >
-              🗑️
+              Delete
             </button>
           </div>
         ))}
@@ -170,7 +172,7 @@ function SubtaskList({ parentTodoId, onSubtasksChange }) {
             className="btn btn-secondary btn-small add-subtask-btn"
             disabled={loading}
           >
-            ➕ Add Subtask
+            + Add Subtask
           </button>
         ) : (
           <form onSubmit={addSubtask} className="add-subtask-form">
