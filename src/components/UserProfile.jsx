@@ -30,13 +30,14 @@ function UserProfile({ user, onLogout, onShowAdmin }) {
 
   if (!showProfile) {
     return (
-      <div className="user-info card" onClick={() => setShowProfile(true)}>
-        <div className="user-info-content">
-          <span className="user-name">{user.name}</span>
-          {user.isAdmin && <span className="badge badge-warning">Admin</span>}
-          <span className="user-status">Cloud Active</span>
+      <div className="user-info" onClick={() => setShowProfile(true)}>
+        <div className="user-avatar">
+          {user.name.charAt(0).toUpperCase()}
         </div>
-        <span className="user-expand-hint">▼</span>
+        <div className="user-details">
+          <h3>{user.name}</h3>
+          <p>{user.isAdmin ? 'Admin' : 'User'}</p>
+        </div>
       </div>
     );
   }

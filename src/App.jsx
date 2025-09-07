@@ -276,10 +276,25 @@ function App() {
     );
   }
 
+  // Get current date in a nice format
+  const getCurrentDate = () => {
+    const now = new Date();
+    const options = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      weekday: 'long'
+    };
+    return now.toLocaleDateString('en-US', options);
+  };
+
   return (
     <div className="app">
       <div className="app-header">
-        <h1 className="app-title">AI Todo</h1>
+        <div className="app-header-content">
+          <p className="app-date">{getCurrentDate()}</p>
+          <h1 className="app-title">AI Todo</h1>
+        </div>
         <UserProfile 
           user={user} 
           onLogout={handleLogout}
